@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
   <h2>Build status</h2>
-  <p class="well">
+  <p class="alert {% if all %}alert-success{% else %}alert-error{% endif %}">
   {% if all %}<span class="btn btn-success disabled">Passing</span>
   {% else %}<span class="btn btn-danger disabled">Failing</span>
-  {% endif %} &middot;
+  {% endif %}
   Last checked: <b>{{ result.when }}</b>.</p>
   <table class="table table-striped">
     <thead>
