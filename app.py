@@ -1,7 +1,10 @@
+from datetime import datetime
+import json
 import os
 
 from flask import Flask, render_template, request
 import requests
+from werkzeug.contrib.cache import MemcachedCache
 
 app = Flask(__name__)
 
@@ -28,9 +31,48 @@ methods = {
 
 regions_sorted = sorted(regions.keys())
 
+builds = {
+    'jenkins': ['solitude', 'marketplace', 'marketplace-api',
+                'marketplace-webpay', 'amo-master'],
+    'travis': ['andymckay/receipts', 'mozilla/fireplace']
+}
+
 @app.route('/')
 def base(name=None):
     return render_template('index.html', name=name)
+
+
+def get_jenkins(key):
+    url = 'https://ci.mozilla.org/job/{0}/lastBuild/api/json'.format(key)
+    res = requests.get(url, headers={'Accept': 'application/json'}).json()
+    return res['result'] == 'SUCCESS'
+
+
+def get_travis(key):
+    url = 'https://api.travis-ci.org/repositories/{0}.json'.format(key)
+    res = requests.get(url, headers={'Accept': 'application/json'}).json()
+    return res['last_build_result'] == 0
+
+
+@app.route('/build/')
+def build():
+    cache = MemcachedCache([os.getenv('MEMCACHE_URL', 'localhost:11211')])
+    result = cache.get('build')
+    if not result:
+        result = {'when': datetime.now(), 'results': {}}
+        for key in builds['jenkins']:
+            result['results'][key] = get_jenkins(key)
+        for key in builds['travis']:
+            result['results'][key] = get_travis(key)
+        cache.set('build', result, timeout=60 * 5)
+
+    if 'application/json' in request.headers['Accept']:
+        result['when'] = result['when'].isoformat()
+        return json.dumps({'all': all(result['results'].values()),
+                           'result': result})
+
+    return render_template('build.html', result=result, request=request,
+                           all=all(result['results'].values()))
 
 
 def fill_tiers(result):
@@ -43,15 +85,16 @@ def fill_tiers(result):
     return result
 
 
-@app.route('/tiers/', methods=['GET', 'POST'])
-def tiers():
-    if request.method == 'POST':
+@app.route('/tiers/')
+@app.route('/tiers/<server>/')
+def tiers(server=None):
+    if server:
         res = requests.get('{0}{1}'.format(
-            servers[request.form['server']], api['tiers']))
+            servers[server], api['tiers']))
         result = fill_tiers(res.json())
         return render_template('tiers.html', result=result['objects'],
                                regions=regions, sorted=regions_sorted,
-                               methods=methods, server=request.form['server'])
+                               methods=methods, server=server)
 
     return render_template('tiers.html')
 
