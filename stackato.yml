@@ -4,5 +4,8 @@ framework:
     type: python
     runtime: python27
 
+services:
+    ${name}-memcached: memcached
+
 processes:
     web: python app.py

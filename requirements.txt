@@ -1,3 +1,4 @@
 Flask
 jinja2
 requests
+python-memcached

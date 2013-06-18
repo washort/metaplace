@@ -43,7 +43,8 @@ def base(name=None):
 
 
 def get_jenkins(key):
-    url = 'https://ci.mozilla.org/job/{0}/lastBuild/api/json'.format(key)
+    url = ('https://ci.mozilla.org/job/{0}/lastCompletedBuild/api/json'
+           .format(key))
     res = requests.get(url, headers={'Accept': 'application/json'}).json()
     return res['result'] == 'SUCCESS'
 
@@ -101,4 +102,5 @@ def tiers(server=None):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    app.debug = True
     app.run(host='0.0.0.0', port=port)
