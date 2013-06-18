@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Build status</h2>
+  <p class="well">
+  {% if all %}<span class="btn btn-success disabled">Passing</span>
+  {% else %}<span class="btn btn-danger disabled">Failing</span>
+  {% endif %} &middot;
+  Last checked: <b>{{ result.when }}</b>.</p>
+  <table class="table table-striped">
+    <thead>
+      <th>Name</th>
+      <th>Status</th>
+    </thead>
+    <tbody>
+      {% for name, status in result.results.items() %}
+        <tr>
+        <td>{{ name }}<td>
+        <td>{% if status %}<span class="btn btn-success disabled">Passing</span>
+          {% else %}<span class="btn btn-danger disabled">Failing</span>
+          {% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+  <p>For a JSON version:</p>
+  <pre>curl -H "Accept: application/json" {{ request.url_root }}build/</pre>
+{% endblock %}
+
