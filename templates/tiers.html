@@ -1,16 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
   <h2>Price tiers</h2>
-  <form method="post">
-    <select name="server">
-      <option value="dev">Development</option>
-      <option value="stage">Stage</option>
-      <option value="prod">Production</option>
-    </select>
-    <p>
-      <input type="submit" class="btn btn-success" value="Lookup" />
-    </p>
-  </form>
+  <p>
+    <a href="/tiers/dev/">Development</a> &bull;
+    <a href="/tiers/stage/">Stage</a> &bull;
+    <a href="/tiers/prod/">Production</a>
+  </p>
   {% if result %}
   <p class="well">Results for: <b>{{ server }}</b></p>
   <table class="table table-striped">
