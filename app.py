@@ -33,8 +33,10 @@ regions_sorted = sorted(regions.keys())
 
 builds = {
     'jenkins': ['solitude', 'marketplace', 'marketplace-api',
-                'marketplace-webpay', 'amo-master'],
-    'travis': ['andymckay/receipts', 'mozilla/fireplace']
+                'marketplace-webpay', 'amo-master', 'solitude'],
+    'travis': ['andymckay/receipts', 'mozilla/fireplace',
+               'andymckay/django-paranoia', 'andymckay/curling',
+               'andymckay/django-statsd']
 }
 
 @app.route('/')
