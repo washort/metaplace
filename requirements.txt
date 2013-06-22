@@ -2,3 +2,6 @@ Flask
 jinja2
 requests
 python-memcached
+gevent
+greenlet
+grequests

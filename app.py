@@ -3,6 +3,8 @@ import json
 import os
 
 from flask import Flask, render_template, request
+from gevent.pywsgi import WSGIServer
+import grequests
 import requests
 from werkzeug.contrib.cache import MemcachedCache
 
@@ -44,17 +46,31 @@ def base(name=None):
     return render_template('index.html', name=name)
 
 
-def get_jenkins(key):
-    url = ('https://ci.mozilla.org/job/{0}/lastCompletedBuild/api/json'
-           .format(key))
-    res = requests.get(url, headers={'Accept': 'application/json'}).json()
-    return res['result'] == 'SUCCESS'
+def get_jenkins(keys, results):
+    reqs = []
+    for key in keys:
+        url = ('https://ci.mozilla.org/job/{0}/lastCompletedBuild/api/json'
+               .format(key))
+        reqs.append(grequests.get(url, headers={'Accept': 'application/json'}))
 
+    resps = grequests.map(reqs)
+    for key, resp in zip(keys, resps):
+        results['results'][key] = resp.json()['result'] == 'SUCCESS'
 
-def get_travis(key):
-    url = 'https://api.travis-ci.org/repositories/{0}.json'.format(key)
-    res = requests.get(url, headers={'Accept': 'application/json'}).json()
-    return res['last_build_result'] == 0
+    return results
+
+def get_travis(keys, results):
+    reqs = []
+    for key in keys:
+        url = ('https://api.travis-ci.org/repositories/{0}.json'
+               .format(key))
+        reqs.append(grequests.get(url, headers={'Accept': 'application/json'}))
+
+    resps = grequests.map(reqs)
+    for key, resp in zip(keys, resps):
+        results['results'][key] = resp.json()['last_build_result'] == 0
+
+    return results
 
 
 @app.route('/build/')
@@ -63,10 +79,8 @@ def build():
     result = cache.get('build')
     if not result:
         result = {'when': datetime.now(), 'results': {}}
-        for key in builds['jenkins']:
-            result['results'][key] = get_jenkins(key)
-        for key in builds['travis']:
-            result['results'][key] = get_travis(key)
+        get_jenkins(builds['jenkins'], result)
+        get_travis(builds['travis'], result)
         cache.set('build', result, timeout=60 * 5)
 
     if 'application/json' in request.headers['Accept']:
@@ -105,4 +119,5 @@ def tiers(server=None):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.debug = True
-    app.run(host='0.0.0.0', port=port)
+    http = WSGIServer(('0.0.0.0', port), app)
+    http.serve_forever()
