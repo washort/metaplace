@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime
 import json
 import os
@@ -83,6 +84,7 @@ def build():
         get_travis(builds['travis'], result)
         cache.set('build', result, timeout=60 * 5)
 
+    result['results'] = OrderedDict(sorted(result['results'].items()))
     if 'application/json' in request.headers['Accept']:
         result['when'] = result['when'].isoformat()
         return json.dumps({'all': all(result['results'].values()),

@@ -9,3 +9,7 @@ services:
 
 processes:
     web: python app.py
+
+requirements:
+    staging:
+        ubuntu: [libevent-dev]
