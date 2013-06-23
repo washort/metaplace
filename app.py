@@ -118,6 +118,12 @@ def tiers(server=None):
     return render_template('tiers.html')
 
 
+@app.route('/transactions/')
+def transactions(server=None):
+
+    return render_template('transactions.html')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.debug = True

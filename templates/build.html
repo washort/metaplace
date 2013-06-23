@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h2>Build status</h2>
   <p class="alert {% if all %}alert-success{% else %}alert-error{% endif %}">
   {% if all %}<span class="btn btn-success disabled">Passing</span>
   {% else %}<span class="btn btn-danger disabled">Failing</span>

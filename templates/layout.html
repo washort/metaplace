@@ -5,13 +5,29 @@
 <title>MetaPlace</title>
 </head>
 <body>
-  <div class="container">
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="/">Metaplace</a>
+        <ul class="nav">
+          <li {% if request.path == '/builds/' %}class="active"{% endif %}><a href="/build/">Build status</a></li>
+          <li {% if request.path.startswith('/tiers/') %}class="active"{% endif %}><a href="/tiers/">Price tiers</a></li>
+          <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Test transactions</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top: 60px;">
   {% block body %}
   {% endblock body %}
   </div>
-<a href="http://github.com/andymckay/metaplace">
-    <img alt="Fork me on GitHub" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" style="position: absolute; top: 0; right: 0; border: 0;"></img>
-</a>
+
+  <a href="http://github.com/andymckay/metaplace">
+    <img alt="Fork me on GitHub"
+    src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+    style="position: absolute; top: 40px; right: 0; border: 0;"></img>
+  </a>
 </body>
 </html>
 
