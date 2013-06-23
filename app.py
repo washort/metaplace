@@ -1,13 +1,20 @@
-from collections import OrderedDict
-from datetime import datetime
+import csv
 import json
 import os
 
-from flask import Flask, render_template, request
-from gevent.pywsgi import WSGIServer
+from collections import OrderedDict
+from datetime import datetime, timedelta
+
 import grequests
 import requests
+
+from flask import Flask, render_template, request
+from gevent.pywsgi import WSGIServer
 from werkzeug.contrib.cache import MemcachedCache
+
+# Flag to flip once transactions are on S3.
+TRANSACTIONS = False
+
 
 app = Flask(__name__)
 
@@ -119,9 +126,30 @@ def tiers(server=None):
 
 
 @app.route('/transactions/')
-def transactions(server=None):
+@app.route('/transactions/<server>/<date>/')
+def transactions(server=None, date=''):
+    sfmt = '%Y-%m-%d'
+    lfmt = sfmt + 'T%H:%M:%S'
+    today = datetime.today()
+    dates = (('Yesterday', (today - timedelta(days=1)).strftime(sfmt)),
+             ('Day before', (today - timedelta(days=2)).strftime(sfmt)))
 
-    return render_template('transactions.html')
+    if TRANSACTIONS and server and date:
+        date = datetime.strptime(date, sfmt)
+        src = '/Users/andy/sandboxes/solitude/{0}.log'.format(
+            date.strftime(sfmt))
+
+        with open(src) as csvfile:
+            rows = []
+            for row in csv.DictReader(csvfile):
+                row['created'] = datetime.strptime(row['created'], lfmt)
+                row['modified'] = datetime.strptime(row['modified'], lfmt)
+                row['diff'] = (row['modified'] - row['created'])
+                rows.append(row)
+
+            return render_template('transactions.html', rows=rows,
+                                   server=server, dates=dates)
+    return render_template('transactions.html', dates=dates)
 
 
 if __name__ == '__main__':

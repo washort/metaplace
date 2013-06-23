@@ -1,10 +1,43 @@
 {% extends "layout.html" %}
 {% block body %}
   <p>
-    <a href="/tiers/dev/">Development</a> &bull;
-    <a href="/tiers/stage/">Stage</a>
+    {% for text, date in dates %}
+    <a href="/transactions/dev/{{ date }}/">{{ text }}</a>{% if not loop.last %} &bull; {% endif %}
+    {% endfor %}
   </p>
-
+  {% if rows %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Started</th>
+        <th>Took</th>
+        <th>Currency</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
+        <td>{% if row['diff'] %}{{ row['diff'] }}{% endif %}</td>
+        <td>{{ row['currency'] }}</td>
+        <td>{{ row['amount'] }}</td>
+        <td>
+          {% if row['status'] == '0' %}<span class="label">pending</span>
+          {% elif row['status'] == '1' %}<span class="label label-success">completed</span>
+          {% elif row['status'] == '2' %}<span class="label label-info">checked</span>
+          {% elif row['status'] == '3' %}<span class="label label-info">received</span>
+          {% elif row['status'] == '4' %}<span class="label label-important">failed</span>
+          {% elif row['status'] == '5' %}<span class="label label-warning">cancelled</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  <p>This only shows limited information from the dev
+  servers to show test transactions. For an arbitrary date:</p>
+  <pre>{{ request.url_root }}transactions/dev/YYYY-MM-DD/</pre>
 {% endblock %}
-
-
