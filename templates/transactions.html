@@ -6,6 +6,12 @@
     {% endfor %}
   </p>
   {% if rows %}
+  <p class="alert">Results for: <b>{{ filename }}</b>. Average time to completion: <b>{{ stats['mean'] }} seconds</b>.</p>
+  <div class="progress">
+    {% for status, percent in stats.statuses %}
+      <div class="bar bar-{{ statuses[status][1] }}" style="width: {{ percent }}%;">{{ percent }}%</div>
+    {% endfor %}
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -13,20 +19,14 @@
         <th>Currency</th>
         <th>Amount</th>
         <th>Started</th>
-        <th>Took</th>
+        <th>Took (avg. {{ stats['mean'] }})</th>
       </tr>
     </thead>
     <tbody>
       {% for row in rows %}
       <tr>
         <td>
-          {% if row['status'] == '0' %}<span class="label">pending</span>
-          {% elif row['status'] == '1' %}<span class="label label-success">completed</span>
-          {% elif row['status'] == '2' %}<span class="label label-info">checked</span>
-          {% elif row['status'] == '3' %}<span class="label label-info">received</span>
-          {% elif row['status'] == '4' %}<span class="label label-important">failed</span>
-          {% elif row['status'] == '5' %}<span class="label label-warning">cancelled</span>
-          {% endif %}
+          <span class="label label-{{ statuses[row['status']][1] }}">{{ statuses[row['status']][0] }}</span>
         </td>
         <td>{{ row['currency'] }}</td>
         <td>{{ row['amount'] }}</td>

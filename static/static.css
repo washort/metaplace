@@ -1,0 +1,28 @@
+.progress .bar-null  {
+    background-color: rgb(153, 153, 153);
+    background-image: none;
+    font-weight: bold;
+}
+
+.progress .bar-success  {
+    background-color: rgb(70, 136, 71);
+    background-image: none;
+    font-weight: bold;
+}
+
+.progress .bar-important  {
+    background-color: rgb(185, 74, 72);
+    background-image: none;
+    font-weight: bold;
+}
+
+.progress .bar-warning  {
+    background-image: none;
+    font-weight: bold;
+}
+
+.progress .bar-info  {
+    background-color: rgb(58, 135, 173);
+    background-image: none;
+    font-weight: bold;
+}

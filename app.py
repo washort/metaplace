@@ -1,11 +1,15 @@
-import boto
+from __future__ import division
+
 import csv
+import itertools
 import json
 import os
-from boto.s3.key import Key
 
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
+
+import boto
+from boto.s3.key import Key
 
 import grequests
 import requests
@@ -51,6 +55,16 @@ builds = {
                'andymckay/django-paranoia', 'andymckay/curling',
                'andymckay/django-statsd']
 }
+
+statuses = {
+    '0': ['pending', 'null'],
+    '1': ['completed', 'success'],
+    '2': ['checked', 'info'],
+    '3': ['received', 'info'],
+    '4': ['failed', 'important'],
+    '5': ['cancelled', 'warning'],
+}
+
 
 @app.route('/')
 def base(name=None):
@@ -155,14 +169,25 @@ def transactions(server=None, date=''):
         src = os.path.join(log_cache, filename)
         with open(src) as csvfile:
             rows = []
+            stats = defaultdict(list)
             for row in csv.DictReader(csvfile):
                 row['created'] = datetime.strptime(row['created'], lfmt)
                 row['modified'] = datetime.strptime(row['modified'], lfmt)
                 row['diff'] = (row['modified'] - row['created'])
+                if row['diff']:
+                    stats['diff'].append(row['diff'].total_seconds())
+                stats['status'].append(row['status'])
                 rows.append(row)
 
+            stats['mean'] = '%.2f' % (sum(stats['diff'])/len(stats['diff']))
+            for status, group in itertools.groupby(sorted(stats['status'])):
+                group = len(list(group))
+                perc = (group / len(stats['status'])) * 100
+                stats['statuses'].append((str(status), '%.2f' % perc))
+
             return render_template('transactions.html', rows=rows,
-                                   server=server, dates=dates)
+                                   server=server, dates=dates, stats=stats,
+                                   statuses=statuses, filename=filename)
     return render_template('transactions.html', dates=dates)
 
 
