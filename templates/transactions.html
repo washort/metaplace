@@ -9,20 +9,16 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Started</th>
-        <th>Took</th>
+        <th>Status</th>
         <th>Currency</th>
         <th>Amount</th>
-        <th>Status</th>
+        <th>Started</th>
+        <th>Took</th>
       </tr>
     </thead>
     <tbody>
       {% for row in rows %}
       <tr>
-        <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
-        <td>{% if row['diff'] %}{{ row['diff'] }}{% endif %}</td>
-        <td>{{ row['currency'] }}</td>
-        <td>{{ row['amount'] }}</td>
         <td>
           {% if row['status'] == '0' %}<span class="label">pending</span>
           {% elif row['status'] == '1' %}<span class="label label-success">completed</span>
@@ -32,6 +28,10 @@
           {% elif row['status'] == '5' %}<span class="label label-warning">cancelled</span>
           {% endif %}
         </td>
+        <td>{{ row['currency'] }}</td>
+        <td>{{ row['amount'] }}</td>
+        <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
+        <td>{% if row['diff'] %}{{ row['diff'] }}{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>

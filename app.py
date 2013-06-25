@@ -1,6 +1,8 @@
+import boto
 import csv
 import json
 import os
+from boto.s3.key import Key
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -12,8 +14,9 @@ from flask import Flask, render_template, request
 from gevent.pywsgi import WSGIServer
 from werkzeug.contrib.cache import MemcachedCache
 
-# Flag to flip once transactions are on S3.
-TRANSACTIONS = False
+import local
+
+log_cache = os.path.join(os.path.dirname(__file__), 'cache')
 
 
 app = Flask(__name__)
@@ -125,6 +128,14 @@ def tiers(server=None):
     return render_template('tiers.html')
 
 
+def s3_get(filename):
+    conn = boto.connect_s3(local.S3_AUTH['key'], local.S3_AUTH['secret'])
+    bucket = conn.get_bucket(local.S3_BUCKET)
+    k = Key(bucket)
+    k.key = filename
+    k.get_contents_to_filename(os.path.join(log_cache, filename))
+
+
 @app.route('/transactions/')
 @app.route('/transactions/<server>/<date>/')
 def transactions(server=None, date=''):
@@ -132,13 +143,16 @@ def transactions(server=None, date=''):
     lfmt = sfmt + 'T%H:%M:%S'
     today = datetime.today()
     dates = (('Yesterday', (today - timedelta(days=1)).strftime(sfmt)),
-             ('Day before', (today - timedelta(days=2)).strftime(sfmt)))
+             ('-2 days', (today - timedelta(days=2)).strftime(sfmt)))
 
-    if TRANSACTIONS and server and date:
+    if server and date:
         date = datetime.strptime(date, sfmt)
-        src = '/Users/andy/sandboxes/solitude/{0}.log'.format(
-            date.strftime(sfmt))
+        filename = date.strftime(sfmt) + '.log'
+        if filename not in os.listdir(log_cache):
+            s3_get(filename)
 
+
+        src = os.path.join(log_cache, filename)
         with open(src) as csvfile:
             rows = []
             for row in csv.DictReader(csvfile):
@@ -152,8 +166,12 @@ def transactions(server=None, date=''):
     return render_template('transactions.html', dates=dates)
 
 
+@app.errorhandler(500)
+def page_not_found(err):
+    return render_template('500.html', err=err), 500
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.debug = True
     http = WSGIServer(('0.0.0.0', port), app)
     http.serve_forever()

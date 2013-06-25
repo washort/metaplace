@@ -1,0 +1,3 @@
+S3_AUTH = {'key': '',
+           'secret': ''}
+S3_BUCKET = ''
