@@ -5,8 +5,8 @@
     <a href="/transactions/dev/{{ date }}/">{{ text }}</a>{% if not loop.last %} &bull; {% endif %}
     {% endfor %}
   </p>
+  {% if filename %}<p class="alert">Results for: <b>{{ filename }}</b>.</p>{% endif %}
   {% if rows %}
-  <p class="alert">Results for: <b>{{ filename }}</b>.</p>
   <h2>Summary</h2>
   <table class="table table-striped">
     <thead>
@@ -54,12 +54,14 @@
         <td>{{ row['currency'] }}</td>
         <td>{{ row['amount'] }}</td>
         <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
-        <td>{% if row['diff'] %}{{ row['diff'] }}{% endif %}</td>
+        <td>{% if row['diff'].days >= 0 %}{{ row['diff'] }}{% else %}0:00:00{% endif %}</td>
         <td>{{ row['seller'][:5] }}...</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    <p class="alert alert-info">No transactions.</p>
   {% endif %}
   <p><b>*</b> This is the ID for the app. Resolving this into something
   understandable for the marketplace is still to be done.</p>

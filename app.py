@@ -200,7 +200,7 @@ def transactions(server=None, date=''):
             for row in csv.DictReader(csvfile):
                 row['created'] = datetime.strptime(row['created'], lfmt)
                 row['modified'] = datetime.strptime(row['modified'], lfmt)
-                row['diff'] = (row['modified'] - row['created'])
+                row['diff'] = row['modified'] - row['created']
                 if row['diff']:
                     stats['diff'].append(row['diff'].total_seconds())
                 stats['status'].append(row['status'])
@@ -211,7 +211,8 @@ def transactions(server=None, date=''):
 
                 rows.append(row)
 
-            stats['mean'] = '%.2f' % (sum(stats['diff'])/len(stats['diff']))
+            if len(stats['diff']):
+                stats['mean'] = '%.2f' % (sum(stats['diff'])/len(stats['diff']))
 
             for status, group in groupby(sorted(stats['status'])):
                 group = len(list(group))
