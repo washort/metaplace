@@ -13,3 +13,6 @@ processes:
 requirements:
     staging:
         ubuntu: [libevent-dev]
+
+cron:
+    - "*/5 * * * * python $HOME/cron.py"

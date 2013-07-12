@@ -1,12 +1,14 @@
 from __future__ import division
 
 import csv
-import itertools
 import json
 import os
+import urllib
 
 from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
+from decimal import Decimal
+from itertools import groupby
 
 import boto
 from boto.s3.key import Key
@@ -21,7 +23,7 @@ from werkzeug.contrib.cache import MemcachedCache
 import local
 
 log_cache = os.path.join(os.path.dirname(__file__), 'cache')
-
+cache = MemcachedCache([os.getenv('MEMCACHE_URL', 'localhost:11211')])
 
 app = Flask(__name__)
 
@@ -66,6 +68,12 @@ statuses = {
 }
 
 
+def notify(msg, *args):
+    esc = urllib.urlencode(dict(['args', a] for a in args), doseq=True)
+    url = 'https://notify.paas.allizom.org/notify/{0}/?{1}'.format(msg, esc)
+    requests.post(url, headers={'Authorization':
+                                'Basic {0}'.format(local.NOTIFY_AUTH)})
+
 @app.route('/')
 def base(name=None):
     return render_template('index.html', name=name)
@@ -98,10 +106,9 @@ def get_travis(keys, results):
     return results
 
 
-@app.route('/build/')
-def build():
-    cache = MemcachedCache([os.getenv('MEMCACHE_URL', 'localhost:11211')])
+def get_build():
     result = cache.get('build')
+
     if not result:
         result = {'when': datetime.now(), 'results': {}}
         get_jenkins(builds['jenkins'], result)
@@ -109,13 +116,30 @@ def build():
         cache.set('build', result, timeout=60 * 5)
 
     result['results'] = OrderedDict(sorted(result['results'].items()))
+    passing = all(result['results'].values())
+    last = bool(cache.get('last-build'))
+
+    cache.set('last-build', True)
+    if last is None:
+        cache.set('last-build', bool(passing))
+
+    elif last != passing:
+        #notify('builds', 'passing' if passing else 'failing')
+        cache.set('last-build', bool(passing))
+
+    return result, passing
+
+
+@app.route('/build/')
+def build():
+    result, passing = get_build()
+
     if 'application/json' in request.headers['Accept']:
         result['when'] = result['when'].isoformat()
-        return json.dumps({'all': all(result['results'].values()),
-                           'result': result})
+        return json.dumps({'all': passing, 'result': result})
 
     return render_template('build.html', result=result, request=request,
-                           all=all(result['results'].values()))
+                           all=passing)
 
 
 def fill_tiers(result):
@@ -150,6 +174,10 @@ def s3_get(filename):
     k.get_contents_to_filename(os.path.join(log_cache, filename))
 
 
+def list_to_dict_multiple(listy):
+    return reduce(lambda x, (k,v): x[k].append(v) or x, listy, defaultdict(list))
+
+
 @app.route('/transactions/')
 @app.route('/transactions/<server>/<date>/')
 def transactions(server=None, date=''):
@@ -165,7 +193,6 @@ def transactions(server=None, date=''):
         if filename not in os.listdir(log_cache):
             s3_get(filename)
 
-
         src = os.path.join(log_cache, filename)
         with open(src) as csvfile:
             rows = []
@@ -177,13 +204,26 @@ def transactions(server=None, date=''):
                 if row['diff']:
                     stats['diff'].append(row['diff'].total_seconds())
                 stats['status'].append(row['status'])
+
+                if row['currency'] and row['amount']:
+                    stats['currencies'].append((row['currency'],
+                                                Decimal(row['amount'])))
+
                 rows.append(row)
 
             stats['mean'] = '%.2f' % (sum(stats['diff'])/len(stats['diff']))
-            for status, group in itertools.groupby(sorted(stats['status'])):
+
+            for status, group in groupby(sorted(stats['status'])):
                 group = len(list(group))
                 perc = (group / len(stats['status'])) * 100
                 stats['statuses'].append((str(status), '%.2f' % perc))
+
+            stats['currencies'] = list_to_dict_multiple(stats['currencies'])
+            for currency, items in stats['currencies'].items():
+                stats['currencies'][currency] = {'items': items}
+                stats['currencies'][currency]['count'] = len(items)
+                mean = (sum(items) / len(items))
+                stats['currencies'][currency]['mean'] = '%.2f' % mean
 
             return render_template('transactions.html', rows=rows,
                                    server=server, dates=dates, stats=stats,
@@ -198,5 +238,6 @@ def page_not_found(err):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    app.debug = True
     http = WSGIServer(('0.0.0.0', port), app)
     http.serve_forever()

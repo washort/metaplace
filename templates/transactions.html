@@ -6,12 +6,34 @@
     {% endfor %}
   </p>
   {% if rows %}
-  <p class="alert">Results for: <b>{{ filename }}</b>. Average time to completion: <b>{{ stats['mean'] }} seconds</b>.</p>
+  <p class="alert">Results for: <b>{{ filename }}</b>.</p>
+  <h2>Summary</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Currency</th>
+        <th>Number</th>
+        <th>Mean</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for currency, row in stats.currencies.items() %}
+        <tr>
+          <td>{{ currency }}</td>
+          <td>{{ row['count'] }}</td>
+          <td>{{ row['mean'] }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p>Average time to completion: <b>{{ stats['mean'] }} seconds</b>.</p>
+  <p>Transaction success rate:</p>
   <div class="progress">
     {% for status, percent in stats.statuses %}
       <div class="bar bar-{{ statuses[status][1] }}" style="width: {{ percent }}%;">{{ percent }}%</div>
     {% endfor %}
   </div>
+  <h2>Details</h2>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -20,6 +42,7 @@
         <th>Amount</th>
         <th>Started</th>
         <th>Took (avg. {{ stats['mean'] }})</th>
+        <th>Seller ID*</th>
       </tr>
     </thead>
     <tbody>
@@ -32,11 +55,14 @@
         <td>{{ row['amount'] }}</td>
         <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
         <td>{% if row['diff'] %}{{ row['diff'] }}{% endif %}</td>
+        <td>{{ row['seller'][:5] }}...</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   {% endif %}
+  <p><b>*</b> This is the ID for the app. Resolving this into something
+  understandable for the marketplace is still to be done.</p>
   <p>This only shows limited information from the dev
   servers to show test transactions. For an arbitrary date:</p>
   <pre>{{ request.url_root }}transactions/dev/YYYY-MM-DD/</pre>
