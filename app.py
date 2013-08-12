@@ -16,7 +16,7 @@ from boto.s3.key import Key
 import grequests
 import requests
 
-from flask import Flask, render_template, request
+from flask import abort, Flask, redirect, render_template, request, session
 from gevent.pywsgi import WSGIServer
 from werkzeug.contrib.cache import MemcachedCache
 
@@ -166,12 +166,13 @@ def tiers(server=None):
     return render_template('tiers.html')
 
 
-def s3_get(filename):
-    conn = boto.connect_s3(local.S3_AUTH['key'], local.S3_AUTH['secret'])
-    bucket = conn.get_bucket(local.S3_BUCKET)
+def s3_get(server, src_filename, dest_filename):
+    conn = boto.connect_s3(local.S3_AUTH[server]['key'],
+                           local.S3_AUTH[server]['secret'])
+    bucket = conn.get_bucket(local.S3_BUCKET[server])
     k = Key(bucket)
-    k.key = filename
-    k.get_contents_to_filename(os.path.join(log_cache, filename))
+    k.key = src_filename
+    k.get_contents_to_filename(os.path.join(log_cache, dest_filename))
 
 
 def list_to_dict_multiple(listy):
@@ -181,6 +182,9 @@ def list_to_dict_multiple(listy):
 @app.route('/transactions/')
 @app.route('/transactions/<server>/<date>/')
 def transactions(server=None, date=''):
+    if not session['mozillian']:
+        abort(403)
+
     sfmt = '%Y-%m-%d'
     lfmt = sfmt + 'T%H:%M:%S'
     today = datetime.today()
@@ -189,11 +193,12 @@ def transactions(server=None, date=''):
 
     if server and date:
         date = datetime.strptime(date, sfmt)
-        filename = date.strftime(sfmt) + '.log'
-        if filename not in os.listdir(log_cache):
-            s3_get(filename)
+        src_filename = date.strftime(sfmt) + '.log'
+        dest_filename = date.strftime(sfmt) + '.' + server + '.log'
+        if dest_filename not in os.listdir(log_cache):
+            s3_get(server, src_filename, dest_filename)
 
-        src = os.path.join(log_cache, filename)
+        src = os.path.join(log_cache, dest_filename)
         with open(src) as csvfile:
             rows = []
             stats = defaultdict(list)
@@ -228,7 +233,7 @@ def transactions(server=None, date=''):
 
             return render_template('transactions.html', rows=rows,
                                    server=server, dates=dates, stats=stats,
-                                   statuses=statuses, filename=filename)
+                                   statuses=statuses, filename=dest_filename)
     return render_template('transactions.html', dates=dates)
 
 
@@ -237,8 +242,44 @@ def page_not_found(err):
     return render_template('500.html', err=err), 500
 
 
+@app.errorhandler(403)
+def page_not_allowed(err):
+    return render_template('403.html', err=err), 403
+
+
+@app.route('/auth/login', methods=['POST'])
+def login():
+    # The request has to have an assertion for us to verify
+    if 'assertion' not in request.form:
+        abort(400)
+
+    # Send the assertion to Mozilla's verifier service.
+    data = {'assertion': request.form['assertion'], 'audience': 'http://localhost:5000/'}
+    resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
+
+    # Did the verifier respond?
+    if resp.ok:
+        # Parse the response
+        verification_data = json.loads(resp.content)
+
+        # Check if the assertion was valid
+        if verification_data['status'] == 'okay':
+            # Log the user in by setting a secure session cookie
+            session.update({'email': verification_data['email'],
+                            'mozillian': verification_data['email'].endswith('@mozilla.com')})
+            return 'You are logged in'
+
+    abort(500)
+
+
+@app.route('/auth/logout', methods=['POST', 'GET'])
+def logout():
+    session.update({'email': None, 'mozillian': False})
+    return 'You are logged out'
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.debug = True
+    app.secret_key = local.SECRET
     http = WSGIServer(('0.0.0.0', port), app)
     http.serve_forever()
