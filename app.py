@@ -182,13 +182,13 @@ def list_to_dict_multiple(listy):
 @app.route('/transactions/')
 @app.route('/transactions/<server>/<date>/')
 def transactions(server=None, date=''):
-    if not session['mozillian']:
+    if not session.get('mozillian'):
         abort(403)
 
     sfmt = '%Y-%m-%d'
     lfmt = sfmt + 'T%H:%M:%S'
     today = datetime.today()
-    dates = (('Yesterday', (today - timedelta(days=1)).strftime(sfmt)),
+    dates = (('-1 day', (today - timedelta(days=1)).strftime(sfmt)),
              ('-2 days', (today - timedelta(days=2)).strftime(sfmt)))
 
     if server and date:
@@ -254,8 +254,10 @@ def login():
         abort(400)
 
     # Send the assertion to Mozilla's verifier service.
-    data = {'assertion': request.form['assertion'], 'audience': 'http://localhost:5000/'}
-    resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
+    data = {'assertion': request.form['assertion'],
+            'audience': 'https://metaplace.paas.allizom.org/'}
+    resp = requests.post('https://verifier.login.persona.org/verify',
+                         data=data, verify=True)
 
     # Did the verifier respond?
     if resp.ok:
@@ -265,8 +267,10 @@ def login():
         # Check if the assertion was valid
         if verification_data['status'] == 'okay':
             # Log the user in by setting a secure session cookie
-            session.update({'email': verification_data['email'],
-                            'mozillian': verification_data['email'].endswith('@mozilla.com')})
+            session.update({
+                'email': verification_data['email'],
+                'mozillian': verification_data['email'] in local.MOZS
+            })
             return 'You are logged in'
 
     abort(500)
@@ -276,6 +280,12 @@ def login():
 def logout():
     session.update({'email': None, 'mozillian': False})
     return 'You are logged out'
+
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Strict-Transport-Security', 'max-age=31536000')
+    return response
 
 
 if __name__ == '__main__':

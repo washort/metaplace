@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
   <p>
-    {% for text, date in dates %}
-    <a href="/transactions/dev/{{ date }}/">{{ text }}</a>{% if not loop.last %} &bull; {% endif %}
+    {% for server in ['prod'] %}
+      {% for text, date in dates %}
+        <a href="/transactions/{{ server }}/{{ date }}/">{{ server }} {{ text }}</a>{% if not loop.last %} &bull; {% endif %}
+      {% endfor %}{% if not loop.last %} | {% endif %}
     {% endfor %}
   </p>
   {% if filename %}<p class="alert">Results for: <b>{{ filename }}</b>.</p>{% endif %}
@@ -65,7 +67,7 @@
   {% endif %}
   <p><b>*</b> This is the ID for the app. Resolving this into something
   understandable for the marketplace is still to be done.</p>
-  <p>This only shows limited information from the dev
+  <p>This only shows limited information from the
   servers to show test transactions. For an arbitrary date:</p>
-  <pre>{{ request.url_root }}transactions/dev/YYYY-MM-DD/</pre>
+  <pre>{{ request.url_root }}transactions/server/YYYY-MM-DD/</pre>
 {% endblock %}
