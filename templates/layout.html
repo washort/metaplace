@@ -13,7 +13,7 @@
         <ul class="nav">
           <li {% if request.path == '/builds/' %}class="active"{% endif %}><a href="/build/">Build status</a></li>
           <li {% if request.path.startswith('/tiers/') %}class="active"{% endif %}><a href="/tiers/">Price tiers</a></li>
-          <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Test transactions</a></li>
+          <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Transactions</a></li>
           <li>{% if not session.email %}<a href="#" id="signin">Sign in</a>{% else %}<a href="#" id="signout">Sign out</a>{% endif %}</li>
         </ul>
       </div>
