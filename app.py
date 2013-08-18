@@ -106,6 +106,14 @@ def get_travis(keys, results):
     return results
 
 
+def get_webqa_status(results):
+    resp = requests.get('http://mozilla.github.io/marketplace-tests/status.json').json()
+    for job, details in resp.iteritems():
+        results['results']['mozwebqa/%s' % job] = details['status']
+
+    return results
+
+
 def get_build():
     result = cache.get('build')
 
@@ -113,6 +121,7 @@ def get_build():
         result = {'when': datetime.now(), 'results': {}}
         get_jenkins(builds['jenkins'], result)
         get_travis(builds['travis'], result)
+        get_webqa_status(result)
         cache.set('build', result, timeout=60 * 5)
 
     result['results'] = OrderedDict(sorted(result['results'].items()))
