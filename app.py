@@ -55,7 +55,7 @@ builds = {
                 'marketplace-webpay', 'amo-master', 'solitude'],
     'travis': ['andymckay/receipts', 'mozilla/fireplace',
                'andymckay/django-paranoia', 'andymckay/curling',
-               'andymckay/django-statsd']
+               'andymckay/django-statsd', 'andymckay/mozilla-logger']
 }
 
 statuses = {
@@ -189,7 +189,10 @@ def transactions(server=None, date=''):
     lfmt = sfmt + 'T%H:%M:%S'
     today = datetime.today()
     dates = (('-1 day', (today - timedelta(days=1)).strftime(sfmt)),
-             ('-2 days', (today - timedelta(days=2)).strftime(sfmt)))
+             ('-2 days', (today - timedelta(days=2)).strftime(sfmt)),
+             ('-3 days', (today - timedelta(days=3)).strftime(sfmt)),
+             ('-4 days', (today - timedelta(days=4)).strftime(sfmt)),
+             ('-5 days', (today - timedelta(days=5)).strftime(sfmt)))
 
     if server and date:
         date = datetime.strptime(date, sfmt)
