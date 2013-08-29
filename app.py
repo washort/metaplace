@@ -16,7 +16,8 @@ from boto.s3.key import Key
 import grequests
 import requests
 
-from flask import abort, Flask, redirect, render_template, request, session
+from flask import (abort, Flask, redirect, render_template, request, session,
+                   Response)
 from gevent.pywsgi import WSGIServer
 from werkzeug.contrib.cache import MemcachedCache
 
@@ -74,6 +75,7 @@ def notify(msg, *args):
     requests.post(url, headers={'Authorization':
                                 'Basic {0}'.format(local.NOTIFY_AUTH)})
 
+
 @app.route('/')
 def base(name=None):
     return render_template('index.html', name=name)
@@ -91,6 +93,7 @@ def get_jenkins(keys, results):
         results['results'][key] = resp.json()['result'] == 'SUCCESS'
 
     return results
+
 
 def get_travis(keys, results):
     reqs = []
@@ -140,6 +143,29 @@ def build():
 
     return render_template('build.html', result=result, request=request,
                            all=passing)
+
+
+@app.route('/debug/')
+def debug():
+    return render_template('debug.html')
+
+
+@app.route('/manifest.webapp')
+def manifest():
+    data = json.dumps({
+        "name": "Metaplace",
+        "description": "Information about the marketplace",
+        "launch_path": "/",
+        "icons": {
+            "128": "/img/icon-128.png"
+        },
+        "developer": {
+            "name": "Andy McKay",
+            "url": "https://mozilla..org"
+        },
+        "default_locale": "en"
+    })
+    return Response(data, mimetype='application/x-web-app-manifest+json')
 
 
 def fill_tiers(result):

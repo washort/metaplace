@@ -2,25 +2,38 @@
 <html lang="en">
 <head>
   <link href="/static/bootstrap.css" rel="stylesheet">
+  <link href="/static/bootstrap-responsive.css" rel="stylesheet">
   <link href="/static/static.css" rel="stylesheet">
 <title>MetaPlace</title>
 </head>
 <body>
-  <div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-      <div class="container">
+    <div class="navbar navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container">
+
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+         <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+
         <a class="brand" href="/">Metaplace</a>
-        <ul class="nav">
+
+        <div class="nav-collapse collapse">
+          <ul class="nav">
           <li {% if request.path == '/builds/' %}class="active"{% endif %}><a href="/build/">Build status</a></li>
           <li {% if request.path.startswith('/tiers/') %}class="active"{% endif %}><a href="/tiers/">Price tiers</a></li>
           <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Transactions</a></li>
+          <li {% if request.path.startswith('/debug/') %}class="active"{% endif %}><a href="/debug/">Debug</a></li>
           <li>{% if not session.email %}<a href="#" id="signin">Sign in</a>{% else %}<a href="#" id="signout">Sign out</a>{% endif %}</li>
-        </ul>
+         </ul>
+       </div>
+
       </div>
     </div>
   </div>
 
-  <div class="container" style="padding-top: 60px;">
+  <div class="container">
   {% block body %}
   {% endblock body %}
   <p>Logged in as: <span class="label" data-email="{{ session.email or '' }}" id="session-email">{{ session.email or 'Anonymous' }}</span>
@@ -28,6 +41,7 @@
   <p>Source on <a href="https://github.com/andymckay/metaplace/">github</a>.</p>
   <script src="https://login.persona.org/include.js"></script>
   <script src="/static/jquery-1.10.2.min.js"></script>
+  <script src="/static/bootstrap.js"></script>
   <script src="/static/static.js"></script>
   </div>
 
