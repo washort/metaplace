@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   <p>
-    {% for server in ['prod'] %}
+    {% for server in ['prod', 'stage'] %}
       {% for text, date in dates %}
         <a href="/transactions/{{ server }}/{{ date }}/">{{ server }} {{ text }}</a>{% if not loop.last %} &bull; {% endif %}
       {% endfor %}{% if not loop.last %} | {% endif %}

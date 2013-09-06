@@ -216,9 +216,7 @@ def transactions(server=None, date=''):
     today = datetime.today()
     dates = (('-1 day', (today - timedelta(days=1)).strftime(sfmt)),
              ('-2 days', (today - timedelta(days=2)).strftime(sfmt)),
-             ('-3 days', (today - timedelta(days=3)).strftime(sfmt)),
-             ('-4 days', (today - timedelta(days=4)).strftime(sfmt)),
-             ('-5 days', (today - timedelta(days=5)).strftime(sfmt)))
+             ('-3 days', (today - timedelta(days=3)).strftime(sfmt)))
 
     if server and date:
         date = datetime.strptime(date, sfmt)
