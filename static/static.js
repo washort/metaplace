@@ -37,7 +37,7 @@ $('#debug').on('submit', function() {
       data: {slug: $('#debug input:eq(0)').val()}
     });
   } else {
-    alert('Not installed as an app.');
+    alert('No web activity API, sorry.');
   }
 });
 
