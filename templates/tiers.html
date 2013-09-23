@@ -13,7 +13,6 @@
         <th>Tier&nbsp;name</th>
         {% for id in sorted %}
         <th>{{ regions[id] }}</th>
-        <th>
         {% endfor %}
       </tr>
     </thead>
@@ -23,11 +22,14 @@
           <td>{{ tier.name }}</td>
           {% for id in sorted %}
             {% if id in tier.prices %}
-            <td>{{ tier.prices[id].currency }}&nbsp;{{ tier.prices[id].price }}</td>
-            <td class="{% if methods[tier.prices[id].method] == 'both' %}text-success{% else %}text-info{% endif %}">{{ methods[tier.prices[id].method] }}</td>
+            <td>{{ tier.prices[id].currency }}&nbsp;{{ tier.prices[id].price }}
+              <br>
+              <span class="label {% if methods[tier.prices[id].method] == 'both' %}label-success{% else %}label-info{% endif %}">{{ methods[tier.prices[id].method] }}</span>
+              <span class="label {% if tier.prices[id].dev %}label-info{% endif %}">{% if tier.prices[id].dev %}dev{% endif %}</span>
+              <span class="label {% if tier.prices[id].paid %}label-important{% endif %}">{% if tier.prices[id].paid %}pay{% endif %}</span>
+            </td>
             {% else %}
-            <td />
-            <td />
+            <td>
             {% endif %}
           {% endfor %}
         </tr>
