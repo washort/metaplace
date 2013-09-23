@@ -157,7 +157,10 @@ def manifest():
         "description": "Information about the marketplace",
         "launch_path": "/",
         "icons": {
-            "128": "/img/icon-128.png"
+            "32": "/static/img/icon-32.png",
+            "48": "/static/img/icon-48.png",
+            "64": "/static/img/icon-64.png",
+            "128": "/static/img/icon-128.png"
         },
         "developer": {
             "name": "Andy McKay",
