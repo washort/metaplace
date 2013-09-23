@@ -321,5 +321,7 @@ def after_request(response):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.secret_key = local.SECRET
-    http = WSGIServer(('0.0.0.0', port), app)
+    ip = '0.0.0.0'
+    http = WSGIServer((ip, port), app)
+    print 'Listening at http://{ip}:{port}'.format(ip=ip, port=port)
     http.serve_forever()
