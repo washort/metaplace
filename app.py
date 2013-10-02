@@ -3,6 +3,7 @@ from __future__ import division
 import csv
 import json
 import os
+import time
 import urllib
 
 from collections import defaultdict, OrderedDict
@@ -25,6 +26,7 @@ import local
 
 log_cache = os.path.join(os.path.dirname(__file__), 'cache')
 cache = MemcachedCache([os.getenv('MEMCACHE_URL', 'localhost:11211')])
+CACHE_TIMEOUT = 600
 
 app = Flask(__name__)
 
@@ -208,13 +210,18 @@ def s3_get(server, src_filename, dest_filename):
     conn = boto.connect_s3(local.S3_AUTH[server]['key'],
                            local.S3_AUTH[server]['secret'])
     bucket = conn.get_bucket(local.S3_BUCKET[server])
+    dest = os.path.join(log_cache, dest_filename)
     k = Key(bucket)
     k.key = src_filename
-    k.get_contents_to_filename(os.path.join(log_cache, dest_filename))
+    k.get_contents_to_filename(dest)
+    # Reset the modified time, to be the time we wrote it for caching.
+    # This is probably the wrong way to do it.
+    os.utime(dest, (time.time(), time.time()))
 
 
 def list_to_dict_multiple(listy):
-    return reduce(lambda x, (k,v): x[k].append(v) or x, listy, defaultdict(list))
+    return reduce(lambda x, (k,v): x[k].append(v)
+                  or x, listy, defaultdict(list))
 
 
 @app.route('/transactions/')
@@ -232,13 +239,27 @@ def transactions(server=None, date=''):
 
     if server and date:
         date = datetime.strptime(date, sfmt)
-        src_filename = date.strftime(sfmt) + '.log'
-        dest_filename = date.strftime(sfmt) + '.' + server + '.log'
-        if dest_filename not in os.listdir(log_cache):
-            s3_get(server, src_filename, dest_filename)
+        src_filenames = (
+            date.strftime(sfmt) + '.stats.log',
+            date.strftime(sfmt) + '.log'
+        )
+        dest_filename = date.strftime(sfmt) + '.' + server + '.stats.log'
 
-        src = os.path.join(log_cache, dest_filename)
-        with open(src) as csvfile:
+        dest = os.path.join(log_cache, dest_filename)
+        if (not os.path.exists(dest)
+            or ((time.time() - os.stat(dest).st_mtime) > CACHE_TIMEOUT)):
+            for src_filename in src_filenames:
+                if src_filename not in os.listdir(log_cache):
+                    try:
+                        s3_get(server, src_filename, dest_filename)
+                        break
+                    except boto.exception.S3ResponseError:
+                        pass
+
+        if not os.path.exists(dest):
+            return render_template('transactions.html', dates=dates)
+
+        with open(dest) as csvfile:
             rows = []
             stats = defaultdict(list)
             for row in csv.DictReader(csvfile):
@@ -256,7 +277,8 @@ def transactions(server=None, date=''):
                 rows.append(row)
 
             if len(stats['diff']):
-                stats['mean'] = '%.2f' % (sum(stats['diff'])/len(stats['diff']))
+                stats['mean'] = '%.2f' % (
+                    sum(stats['diff'])/len(stats['diff']))
 
             for status, group in groupby(sorted(stats['status'])):
                 group = len(list(group))
@@ -273,6 +295,7 @@ def transactions(server=None, date=''):
             return render_template('transactions.html', rows=rows,
                                    server=server, dates=dates, stats=stats,
                                    statuses=statuses, filename=dest_filename)
+
     return render_template('transactions.html', dates=dates)
 
 
