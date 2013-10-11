@@ -30,6 +30,8 @@ CACHE_TIMEOUT = 600
 
 app = Flask(__name__)
 
+in_stackato = os.getenv('STACKATO_APP_NAME')
+
 servers = {
     'dev': 'https://marketplace-dev.allizom.org',
     'stage': 'https://marketplace.allizom.org',
@@ -233,7 +235,8 @@ def transactions(server=None, date=''):
     sfmt = '%Y-%m-%d'
     lfmt = sfmt + 'T%H:%M:%S'
     today = datetime.today()
-    dates = (('-1 day', (today - timedelta(days=1)).strftime(sfmt)),
+    dates = (('today', today.strftime(sfmt)),
+             ('-1 day', (today - timedelta(days=1)).strftime(sfmt)),
              ('-2 days', (today - timedelta(days=2)).strftime(sfmt)),
              ('-3 days', (today - timedelta(days=3)).strftime(sfmt)))
 
@@ -317,7 +320,8 @@ def login():
 
     # Send the assertion to Mozilla's verifier service.
     data = {'assertion': request.form['assertion'],
-            'audience': 'https://metaplace.paas.allizom.org/'}
+            'audience': 'https://metaplace.paas.allizom.org/' if in_stackato
+                else 'http://localhost:5000/'}
     resp = requests.post('https://verifier.login.persona.org/verify',
                          data=data, verify=True)
 

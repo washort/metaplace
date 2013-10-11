@@ -45,6 +45,7 @@
         <th>Started</th>
         <th>Took (avg. {{ stats['mean'] }})</th>
         <th>Seller ID*</th>
+        <th>Source</th>
       </tr>
     </thead>
     <tbody>
@@ -58,6 +59,7 @@
         <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
         <td>{% if row['diff'].days >= 0 %}{{ row['diff'] }}{% else %}0:00:00{% endif %}</td>
         <td>{{ row['seller'][:5] }}...</td>
+        <td>{{ row['source'] }}</td>
       </tr>
       {% endfor %}
     </tbody>
