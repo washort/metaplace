@@ -4,9 +4,13 @@
   <link href="/static/bootstrap.css" rel="stylesheet">
   <link href="/static/bootstrap-responsive.css" rel="stylesheet">
   <link href="/static/static.css" rel="stylesheet">
-<title>MetaPlace</title>
+  <title>MetaPlace</title>
+  <script src="/static/jquery-1.10.2.min.js"></script>
+  {% block css %}
+  {% endblock css %}
 </head>
 <body>
+  {% block nav %}
     <div class="navbar navbar-inverse">
       <div class="navbar-inner">
         <div class="container">
@@ -25,6 +29,7 @@
           <li {% if request.path.startswith('/tiers/') %}class="active"{% endif %}><a href="/tiers/">Price tiers</a></li>
           <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Transactions</a></li>
           <li {% if request.path.startswith('/debug/') %}class="active"{% endif %}><a href="/debug/">Debug</a></li>
+          <li {% if request.path.startswith('/bugskiosk/') %}class="active"{% endif %}><a href="/bugskiosk/">Bugs Kiosk</a></li>
           <li>{% if not session.email %}<a href="#" id="signin">Sign in</a>{% else %}<a href="#" id="signout">Sign out</a>{% endif %}</li>
          </ul>
        </div>
@@ -32,19 +37,23 @@
       </div>
     </div>
   </div>
+  {% endblock nav %}
 
   <div class="container">
   {% block body %}
   {% endblock body %}
+  {% block footer %}
   <hr>
   <p>OAuth token {% if session.oauth %}<b><a href="/auth/oauth">stored</a></b>{% else %}<a href="/auth/oauth">not setup</a>{% endif %}.</p>
   <p>Logged in as: <span class="label" data-email="{{ session.email or '' }}" id="session-email">{{ session.email or 'Anonymous' }}</span>
   {% if session.mozillian %}<span class="label label-success">Mozillian</span>{% endif %}.</p>
   <p>Source on <a href="https://github.com/andymckay/metaplace/">github</a>.</p>
+  {% endblock footer %}
   <script src="https://login.persona.org/include.js"></script>
-  <script src="/static/jquery-1.10.2.min.js"></script>
   <script src="/static/bootstrap.js"></script>
   <script src="/static/static.js"></script>
+  {% block js %}
+  {% endblock js %}
   </div>
 
 </body>

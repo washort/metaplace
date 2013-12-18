@@ -145,6 +145,9 @@ def get_build():
 
     return result, passing
 
+@app.route('/bugskiosk/')
+def bugskiosk():
+    return render_template('bugskiosk.html')
 
 @app.route('/build/')
 def build():
