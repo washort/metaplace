@@ -36,8 +36,10 @@
   <div class="container">
   {% block body %}
   {% endblock body %}
+  <hr>
+  <p>OAuth token {% if session.oauth %}<b><a href="/auth/oauth">stored</a></b>{% else %}<a href="/auth/oauth">not setup</a>{% endif %}.</p>
   <p>Logged in as: <span class="label" data-email="{{ session.email or '' }}" id="session-email">{{ session.email or 'Anonymous' }}</span>
-  {% if session.mozillian %}<span class="label label-success">Mozillian</span>{% endif %}</p>
+  {% if session.mozillian %}<span class="label label-success">Mozillian</span>{% endif %}.</p>
   <p>Source on <a href="https://github.com/andymckay/metaplace/">github</a>.</p>
   <script src="https://login.persona.org/include.js"></script>
   <script src="/static/jquery-1.10.2.min.js"></script>

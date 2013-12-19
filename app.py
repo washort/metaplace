@@ -342,6 +342,22 @@ def login():
     abort(500)
 
 
+@app.route('/auth/oauth', methods=['GET'])
+def oauth_get():
+    return render_template('oauth.html')
+
+
+@app.route('/auth/oauth', methods=['POST'])
+def oauth_save():
+    # This will store it in the cookie. If someone wants to do the whole
+    # 3 legged oauth dance, pull requests welcome.
+    session.update({'oauth': {
+        'key': request.form.get('key'),
+        'secret': request.form.get('secret')}
+    })
+    return redirect('/')
+
+
 @app.route('/auth/logout', methods=['POST', 'GET'])
 def logout():
     session.update({'email': None, 'mozillian': False})
