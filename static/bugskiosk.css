@@ -1,0 +1,43 @@
+a:link, a:visited {
+  color: black;
+  text-decoration: none;
+}
+#dateheader {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 600px;
+  font-size: 6em;
+  line-height: normal; /* overrides bootstrap */
+  z-index: -10;
+}
+#loading {
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 500px;
+  width: 200px;
+}
+.panel {
+  background-color: #eee;
+  border-radius: 15px;
+  float: left;
+  line-height: normal; /* overrides bootstrap */
+  margin: 10px;
+  min-height: 200px;
+  overflow: hidden;
+  padding: 5px;
+  text-align: center;
+  white-space: nowrap;
+  width: 200px;
+}
+.panel:hover {
+  background-color: #ddd;
+}
+.panel-body {
+  font-size: 10em;
+  font-weight: bold;
+}
+.panel-heading {
+  font-size: 2em;
+  margin: 2px;
+}
