@@ -15,7 +15,7 @@ requirements:
         ubuntu: [libevent-dev]
 
 env:
-  PIP_OPTS: "--exists-action=w --no-deps --extra-index-url=https://pyrepo.addons.mozilla.org/"
+  PIP_OPTS: "--no-deps --extra-index-url=https://pyrepo.addons.mozilla.org/"
 
 cron:
     - "*/5 * * * * python $HOME/cron.py"
