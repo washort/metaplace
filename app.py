@@ -17,6 +17,7 @@ from boto.s3.key import Key
 import grequests
 import requests
 
+from curling.lib import API, safe_parser
 from flask import (abort, Flask, redirect, render_template, request, session,
                    Response)
 from gevent.pywsgi import WSGIServer
@@ -39,7 +40,8 @@ servers = {
 }
 
 api = {
-    'tiers': '/api/v1/webpay/prices'
+    'tiers': '/api/v1/webpay/prices',
+    'tier': '/api/v1/services/price-currency/'
 }
 
 regions = {
@@ -209,6 +211,39 @@ def tiers(server=None):
                                methods=methods, server=server)
 
     return render_template('tiers.html')
+
+
+def _tier(server, tier):
+    srv = API(servers[server])
+    srv.activate_oauth(session['oauth']['key'], session['oauth']['secret'])
+    return srv.by_url('/api/v1/services/price-currency/{0}/'.format(tier),
+                      parser=safe_parser)
+
+
+@app.route('/tiers/')
+@app.route('/tiers/<server>/<tier>/', methods=['GET'])
+def tier_get(server=None, tier=None):
+    if not server or not tier:
+        return redirect('/tiers/')
+
+    return render_template('tiers-edit.html', tier=_tier(server, tier).get())
+
+
+@app.route('/tiers/')
+@app.route('/tiers/<server>/<tier>/', methods=['POST'])
+def tier_edit(server=None, tier=None):
+    if not server or not tier:
+        return redirect('/tiers/')
+
+    srv = _tier(server, tier)
+    obj = srv.get()
+    for k in ['paid', 'dev', 'method', 'currency']:
+        obj[k] = request.form.get(k)
+        if k in ['paid', 'dev']:
+            obj[k] = bool(obj[k])
+    print obj
+    srv.put(obj)
+    return redirect(request.url)
 
 
 def s3_get(server, src_filename, dest_filename):

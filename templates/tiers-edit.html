@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h3>Alter price tier</h3>
+  <h4>Current</h4>
+  <pre>{{ tier }}</pre>
+  <hr>
+  <form method="post" role="form">
+    <fieldset>
+      <legend>Change</legend>
+      <div class="formgroup">
+        <input type="checkbox" id="paid" name="paid" {% if tier.paid %}checked{% endif %}> Paid
+      </div>
+      <div class="formgroup">
+        <input type="checkbox" id="dev" name="dev" {% if tier.paid %}checked{% endif %}> Dev
+      </div>
+      <div class="formgroup">
+        <label for="method">Method</label>
+        <input value="{{ tier.method }}" id="method" name="method">
+        <label for="currency">Currency</label>
+        <input value="{{ tier.currency }}" id="currency" name="currency">
+      </div>
+      <label></label>
+      <button type="submit" class="btn">Change</button>
+    </fieldset>
+  </form>
+{% endblock %}
+
