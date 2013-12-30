@@ -21,6 +21,7 @@ from curling.lib import API, safe_parser
 from flask import (abort, Flask, redirect, render_template, request, session,
                    Response)
 from gevent.pywsgi import WSGIServer
+import pingdomlib
 from werkzeug.contrib.cache import MemcachedCache
 
 import local
@@ -73,6 +74,44 @@ statuses = {
     '4': ['failed', 'important'],
     '5': ['cancelled', 'warning'],
 }
+
+
+@app.route('/apikiosk/')
+def apikiosk():
+    a_day_ago = int(time.time()) - 86400
+    pingdom = pingdomlib.Pingdom(local.PINGDOM_USER,
+                                 local.PINGDOM_PASS,
+                                 local.PINGDOM_APIKEY,
+                                 local.PINGDOM_ACCOUNT_EMAIL);
+    results = []
+
+    checks = cache.get('apikiosk-checks')
+    if not checks:
+        checks = pingdom.getChecks()
+        cache.set('apikiosk-checks', checks, timeout=60 * 60)
+
+    for check in checks:
+        if check.name.startswith("MKT -"):
+
+            c = cache.get('apikiosk-%s' % check.id)
+            if not c:
+                # This takes the average response time from the past 24 hours
+                try:
+                    # pingdomlib uses a reserved keyword (from) as a kwarg :(
+                    avg = check.averages(**{'from': int(time.time())-86400})
+                    avg = avg['responsetime']['avgresponse']
+
+                    c = {'avg': avg, 'id': check.id, 'name': check.name,
+                         'status': check.status}
+                    cache.set('apikiosk-%s' % check.id, c, timeout=60 * 60)
+                except:
+                    # Set an 'err' so it shows up on the screen.  Not in cache
+                    # on purpose
+                    c = {'avg': 'err'}
+
+            results.append(c)
+
+    return render_template('apikiosk.html', checks=results)
 
 
 def notify(msg, *args):
