@@ -138,11 +138,15 @@ function tastywaffles(source, data) {
         return;
     }
 
-    var call_me_maybe = function(_, thingy) { consume(source, thingy) };
+     var call_me_maybe = function(things) {
+         if (things) {
+             $.each(things, function(_, thingy) { consume(source, thingy); });
+         }
+     };
 
-    data.waffle.switches && $.each(data.waffle.switches, call_me_maybe);
-    data.waffle.flags && $.each(data.waffle.flags, call_me_maybe);
-    data.waffle.samples && $.each(data.waffle.samples, call_me_maybe);
+     call_me_maybe(data.waffle.switches);
+     call_me_maybe(data.waffle.flags);
+     call_me_maybe(data.waffle.samples);
 }
 
 $(document).ready(function() {
