@@ -138,16 +138,11 @@ function tastywaffles(source, data) {
         return;
     }
 
-    if (data.waffle.switches) {
-        $.each(data.waffle.switches, function(_,data) { consume(source, data); });
-    }
-    if (data.waffle.flags) {
-        $.each(data.waffle.flags, function(_,data) { consume(source, data); });
-    }
-    if (data.waffle.samples) {
-        //TODO - not sure this works, no samples exist right now...
-        $.each(data.waffle.samples, function(_,data) { consume(source, data); });
-    }
+    var call_me_maybe = function(_, thingy) { consume(source, thingy) };
+
+    data.waffle.switches && $.each(data.waffle.switches, call_me_maybe);
+    data.waffle.flags && $.each(data.waffle.flags, call_me_maybe);
+    data.waffle.samples && $.each(data.waffle.samples, call_me_maybe);
 }
 
 $(document).ready(function() {
