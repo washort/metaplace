@@ -15,21 +15,21 @@
 {%- endmacro -%}
 
 {% block body %}
-<div id="content">
-<div id="loading"></div>
-{% for check in checks %}
-  <div class="col-sm-4">
-    <div class="panel panel-{{ arewefastyet(check.avg) }}">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{check.name}}</h3>
+  <div id="content">
+  <div id="loading"></div>
+  {% for check in checks %}
+    <div class="col-sm-4">
+      <div class="panel panel-{{ arewefastyet(check.avg) }}">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{check.name}}</h3>
+        </div>
+        <div class="panel-body">
+            {{check.avg}} <span class="unit">ms</span>
+        </div>
       </div>
-      <div class="panel-body">
-          {{check.avg}} <span class="unit">ms</span>
-      </div>
-    </div>
-  </div><!-- /.col-sm-4 -->
-{% endfor %}
-</div>
+    </div><!-- /.col-sm-4 -->
+  {% endfor %}
+  </div>
 {% endblock %}
 {% block footer%}
 {% endblock %}
