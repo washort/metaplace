@@ -15,13 +15,13 @@ import boto
 from boto.s3.key import Key
 
 import grequests
+import pingdomlib
 import requests
 
 from curling.lib import API, safe_parser
 from flask import (abort, Flask, redirect, render_template, request, session,
                    Response)
 from gevent.pywsgi import WSGIServer
-import pingdomlib
 from werkzeug.contrib.cache import MemcachedCache
 
 import local
@@ -96,18 +96,13 @@ def apikiosk():
             c = cache.get('apikiosk-%s' % check.id)
             if not c:
                 # This takes the average response time from the past 24 hours
-                try:
-                    # pingdomlib uses a reserved keyword (from) as a kwarg :(
-                    avg = check.averages(**{'from': int(time.time())-86400})
-                    avg = avg['responsetime']['avgresponse']
+                # pingdomlib uses a reserved keyword (from) as a kwarg :(
+                avg = check.averages(**{'from': int(time.time())-86400})
+                avg = avg['responsetime']['avgresponse']
 
-                    c = {'avg': avg, 'id': check.id, 'name': check.name,
-                         'status': check.status}
-                    cache.set('apikiosk-%s' % check.id, c, timeout=60 * 60)
-                except:
-                    # Set an 'err' so it shows up on the screen.  Not in cache
-                    # on purpose
-                    c = {'avg': 'err'}
+                c = {'avg': avg, 'id': check.id, 'name': check.name,
+                     'status': check.status}
+                cache.set('apikiosk-%s' % check.id, c, timeout=60 * 60)
 
             results.append(c)
 
@@ -190,9 +185,11 @@ def get_build():
 def bugskiosk():
     return render_template('bugskiosk.html')
 
+
 @app.route('/waffles/')
 def waffles():
     return render_template('waffles.html')
+
 
 @app.route('/build/')
 def build():

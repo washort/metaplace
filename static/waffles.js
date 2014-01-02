@@ -1,4 +1,3 @@
-
 // If you add a source here, you'll need to add a column in the HTML table also
 var sources = {
     'altdev': 'https://marketplace-altdev.allizom.org/api/v1/services/config/site/',
