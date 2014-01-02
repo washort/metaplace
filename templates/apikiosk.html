@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block css %}
+  <link href="/static/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="/static/apikiosk.css" rel="stylesheet">
+{% endblock css %}
+
+{%- macro arewefastyet(ms) -%}
+  {%- if ms > 1000 -%}
+    danger
+  {%- elif ms > 500 -%}
+    warning
+  {%- else -%}
+    success
+  {%- endif -%}
+{%- endmacro -%}
+
+{% block body %}
+<div id="content">
+<div id="loading"></div>
+{% for check in checks %}
+  <div class="col-sm-4">
+    <div class="panel panel-{{ arewefastyet(check.avg) }}">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{check.name}}</h3>
+      </div>
+      <div class="panel-body">
+          {{check.avg}} <span class="unit">ms</span>
+      </div>
+    </div>
+  </div><!-- /.col-sm-4 -->
+{% endfor %}
+</div>
+{% endblock %}
+{% block footer%}
+{% endblock %}
