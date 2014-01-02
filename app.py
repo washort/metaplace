@@ -190,6 +190,10 @@ def get_build():
 def bugskiosk():
     return render_template('bugskiosk.html')
 
+@app.route('/waffles/')
+def waffles():
+    return render_template('waffles.html')
+
 @app.route('/build/')
 def build():
     result, passing = get_build()

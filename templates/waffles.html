@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block css %}
+  <link href="/static/waffles.css" rel="stylesheet">
+{% endblock css %}
+{% block body %}
+    <script src="/static/waffles.js"></script>
+    <div id="content">
+      <table id="output">
+          <thead>
+              <tr>
+                  <th><marquee behavior="alternate" scrolldelay="500">♬ Everyday I'm wafflin' ♬</marquee></th>
+                  <th class="angle"><a href="https://marketplace-altdev.allizom.org/admin/models/waffle/">altdev</th>
+                  <th class="angle"><a href="https://marketplace-dev.allizom.org/admin/models/waffle/">dev</a></th>
+                  <th class="angle"><a href="https://marketplace.allizom.org/admin/models/waffle/">stage</a></th>
+                  <th class="angle"><a href="https://marketplace.firefox.com/admin/models/waffle/">prod</a></th>
+              </tr>
+          </thead>
+          <tbody></tbody>
+      </table>
+    </div>
+{% endblock %}
+{% block footer%}
+{% endblock %}
