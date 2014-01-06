@@ -100,7 +100,7 @@ def apikiosk():
                 avg = check.averages(**{'from': int(time.time())-86400})
                 avg = avg['responsetime']['avgresponse']
 
-                c = {'avg': avg, 'id': check.id, 'name': check.name,
+                c = {'avg': avg, 'id': check.id, 'name': check.name[5:],
                      'status': check.status}
 
                 d = check.getDetails()
