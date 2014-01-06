@@ -21,7 +21,7 @@
     <div class="col-sm-4">
       <div class="panel panel-{{ arewefastyet(check.avg) }}">
         <div class="panel-heading">
-          <h3 class="panel-title">{{check.name}}</h3>
+          <h3 class="panel-title" title="{{check.url}}">{{check.name}}</h3>
         </div>
         <div class="panel-body">
             {{check.avg}} <span class="unit">ms</span>

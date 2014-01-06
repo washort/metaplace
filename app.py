@@ -85,24 +85,29 @@ def apikiosk():
                                  local.PINGDOM_ACCOUNT_EMAIL);
     results = []
 
-    checks = cache.get('apikiosk-checks')
+    checks = cache.get('apikiosk.checks')
     if not checks:
         checks = pingdom.getChecks()
-        cache.set('apikiosk-checks', checks, timeout=60 * 60)
+        cache.set('apikiosk.checks', checks, timeout=60 * 60)
 
     for check in checks:
         if check.name.startswith("MKT -"):
 
-            c = cache.get('apikiosk-%s' % check.id)
+            c = cache.get('apikiosk.%s' % check.id)
             if not c:
                 # This takes the average response time from the past 24 hours
                 # pingdomlib uses a reserved keyword (from) as a kwarg :(
                 avg = check.averages(**{'from': int(time.time())-86400})
                 avg = avg['responsetime']['avgresponse']
 
-                c = {'avg': avg, 'id': check.id, 'name': check.name,
+                c = {'avg': avg, 'id': check.id, 'name': check.name[5:],
                      'status': check.status}
-                cache.set('apikiosk-%s' % check.id, c, timeout=60 * 60)
+
+                d = check.getDetails()
+
+                c['url'] = "%s%s" % (check.hostname, d['type']['http']['url'])
+
+                cache.set('apikiosk.%s' % check.id, c, timeout=60 * 60)
 
             results.append(c)
 
