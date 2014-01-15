@@ -78,7 +78,6 @@ statuses = {
 
 @app.route('/apikiosk/')
 def apikiosk():
-    a_day_ago = int(time.time()) - 86400
     pingdom = pingdomlib.Pingdom(local.PINGDOM_USER,
                                  local.PINGDOM_PASS,
                                  local.PINGDOM_APIKEY,
