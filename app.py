@@ -259,7 +259,10 @@ def tiers(server=None):
 
 def _tier(server, tier):
     srv = API(servers[server])
-    srv.activate_oauth(session['oauth']['key'], session['oauth']['secret'])
+    if server not in session['oauth']:
+        raise ValueError('No key in session for %s.' % server)
+    auth = session['oauth'][server]
+    srv.activate_oauth(auth['key'], auth['secret'])
     return srv.by_url('/api/v1/services/price-currency/{0}/'.format(tier),
                       parser=safe_parser)
 
@@ -270,7 +273,9 @@ def tier_get(server=None, tier=None):
     if not server or not tier:
         return redirect('/tiers/')
 
-    return render_template('tiers-edit.html', tier=_tier(server, tier).get())
+    return render_template('tiers-edit.html',
+        tier=_tier(server, tier).get(),
+        server=server)
 
 
 @app.route('/tiers/')
@@ -285,7 +290,6 @@ def tier_edit(server=None, tier=None):
         obj[k] = request.form.get(k)
         if k in ['paid', 'dev']:
             obj[k] = bool(obj[k])
-    print obj
     srv.put(obj)
     return redirect(request.url)
 
@@ -424,19 +428,25 @@ def login():
     abort(500)
 
 
-@app.route('/auth/oauth', methods=['GET'])
-def oauth_get():
-    return render_template('oauth.html')
+@app.route('/auth/oauth/', methods=['GET'])
+@app.route('/auth/oauth/<server>', methods=['GET'])
+def oauth_get(server=None):
+    return render_template('oauth.html', server=server, servers=servers)
 
 
-@app.route('/auth/oauth', methods=['POST'])
-def oauth_save():
+@app.route('/auth/oauth/<server>', methods=['POST'])
+def oauth_save(server):
     # This will store it in the cookie. If someone wants to do the whole
     # 3 legged oauth dance, pull requests welcome.
-    session.update({'oauth': {
-        'key': request.form.get('key'),
-        'secret': request.form.get('secret')}
-    })
+    if not 'oauth' in session:
+        session['oauth'] = {}
+        for key in servers.keys():
+            session['oauth'][key] = {}
+
+    session['oauth'][server] = {
+        'key': request.form.get('key').strip(),
+        'secret': request.form.get('secret').strip()
+    }
     return redirect('/')
 
 
