@@ -1,15 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
   <h3>OAuth Credentials</h3>
-  <p>For the <a href="https://marketplace.allizom.org/developers/api">stage server</a>.</p>
-  <form id="oauth" method="post">
-    <label for="id_key"></label>
-    <input id="id_key" type="text" name="key" placeholder="OAuth Key"></input>
-    <label for="id_secret"></label>
-    <input id="id_secret" type="text" name="secret" placeholder="OAuth Secret"></input>
-    <label />
-    <button type="submit" class="btn">Save</button>
-  </form>
+  <p>
+    {% for server in servers %}
+      <a href="/auth/oauth/{{ server }}">{{ server.title() }}</a>{% if not loop.last %} &bull; {% endif %}
+    {% endfor %}
+  </p>
+  {% if server %}
+  <p>Get tokens at <a href="{{ servers[server] }}/developers/api">{{ server }}</a> (or someone implement three legged oauth flow).</p>
+    <form id="oauth" method="post" role="form">
+      <div class="form-group">
+        <label for="id_key"></label>
+        <input id="id_key" class="form-contol" type="text" name="key" placeholder="OAuth Key"></input>
+      </div>
+      <div class="form-group">
+        <label for="id_secret"></label>
+        <input id="id_secret" class="form-contol" ttype="text" name="secret" placeholder="OAuth Secret"></input>
+      </div>
+      <div class="form-group">
+        <label />
+        <button type="submit" class="btn btn-default">Save</button>
+      </div>
+    </form>
+  {% endif %}
 
 {% endblock %}
 

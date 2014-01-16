@@ -30,10 +30,8 @@
               {% endif %}
               <br>
               <span class="label {% if methods[tier.prices[id].method] == 'both' %}label-success{% else %}label-info{% endif %}">{{ methods[tier.prices[id].method] }}</span>
-              {% if tier.prices[id].dev and tier.prices[id].paid %}<span class="label label-success">paid</span>
-              {% elif tier.prices[id].dev and not tier.prices[id].paid %}<span class="label label-info">dev</span>
-              {% elif not tier.prices[id].dev and tier.prices[id].paid %}<span class="label label-warning">paid (not dev)</span>
-              {% endif %}
+              {% if tier.prices[id].dev and not tier.prices[id].paid %}<span class="label label-info">dev only</span>{% endif %}
+              {% if not tier.prices[id].dev and tier.prices[id].paid %}<span class="label label-warning">paid (not dev)</span>{% endif %}
             </td>
             {% else %}
             <td>
