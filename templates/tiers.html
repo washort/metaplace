@@ -1,18 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
-  <p>
-    <a href="/tiers/dev/">Development</a> &bull;
-    <a href="/tiers/stage/">Stage</a> &bull;
-    <a href="/tiers/prod/">Production</a>
-  </p>
-  {% if result %}
-  <p class="alert">Results for: <b>{{ server }}</b></p>
+  <form method="get" role="form">
+    <div class="form-group form-inline">
+      <label>Filter by: </label>
+      <select name="server">
+        {% for k, v in servers.items() %}
+          <option value="{{ k }}" {% if server == k %}selected{% endif %}>{{ k.capitalize() }}</option>
+        {% endfor %}
+      </select>
+      <select name="provider">
+        <option value="bango" {% if request.values.get('provider', '')  == 'bango' %}selected{% endif %}>Bango</option>
+        <option value="boku" {% if request.values.get('provider', '')  == 'boku' %}selected{% endif %}>Boku</option>
+      </select>
+      <select name="region">
+        <option value="">All Regions</option>
+        {% for k in all_regions %}
+        <option value="{{ k }}" {% if request.values.get('region', '') == k %}selected{% endif %}>{{ regions[k] }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-success">Filter</button>
+    </div>
+  </form>
+ {% if result %}
   <table class="table table-striped">
     <thead>
       <tr>
         <th>Tier&nbsp;name</th>
         {% for id in sorted %}
-        <th>{{ regions[id] }}</th>
+          <th>{{ regions[id] }}</th>
         {% endfor %}
       </tr>
     </thead>

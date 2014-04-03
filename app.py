@@ -35,6 +35,7 @@ app = Flask(__name__)
 in_stackato = os.getenv('STACKATO_APP_NAME')
 
 servers = {
+    'local': 'http://localhost:8000',
     'dev': 'https://marketplace-dev.allizom.org',
     'stage': 'https://marketplace.allizom.org',
     'prod': 'https://marketplace.firefox.com'
@@ -46,8 +47,10 @@ api = {
 }
 
 regions = {
-    1: 'Worldwide', 2: 'US', 4: 'UK', 7: 'Brazil', 8: 'Spain', 9: 'Colombia',
-    10: 'Venezuela', 11: 'Poland', 12: 'Mexico', 13: 'Hungary', 14: 'Germany'
+    # Casting int as strings because its easier.
+    '1': 'Worldwide', '2': 'US', '4': 'UK', '7': 'Brazil', '8': 'Spain',
+    '9': 'Colombia', '10': 'Venezuela', '11': 'Poland', '12': 'Mexico',
+    '13': 'Hungary', '14': 'Germany'
 }
 
 methods = {
@@ -233,28 +236,36 @@ def manifest():
     return Response(data, mimetype='application/x-web-app-manifest+json')
 
 
-def fill_tiers(result):
+def fill_tiers(result, region=None):
     for tier in result['objects']:
         prices = {}
         for price in tier['prices']:
-            prices[price['region']] = price
+            if region and str(price['region']) != region:
+                continue
+            prices[str(price['region'])] = price
         tier['prices'] = prices
 
     return result
 
 
 @app.route('/tiers/')
-@app.route('/tiers/<server>/')
-def tiers(server=None):
-    if server:
-        res = requests.get('{0}{1}'.format(
-            servers[server], api['tiers']))
-        result = fill_tiers(res.json())
+def tiers():
+    get = request.values.get
+    server, provider, region = get('server'), get('provider'), get('region')
+    if server and provider:
+        res = requests.get('{0}{1}?provider={2}'.format(
+            servers[server], api['tiers'], provider))
+        result = fill_tiers(res.json(), region)
         return render_template('tiers.html', result=result['objects'],
-                               regions=regions, sorted=regions_sorted,
-                               methods=methods, server=server)
+                               regions=regions,
+                               sorted=[region] if region else regions_sorted,
+                               methods=methods, server=server,
+                               provider=provider,
+                               # Form population.
+                               servers=servers, all_regions=regions_sorted)
 
-    return render_template('tiers.html')
+    return render_template('tiers.html',
+        servers=servers, all_regions=regions_sorted, regions=regions)
 
 
 def _tier(server, tier):
@@ -267,7 +278,6 @@ def _tier(server, tier):
                       parser=safe_parser)
 
 
-@app.route('/tiers/')
 @app.route('/tiers/<server>/<tier>/', methods=['GET'])
 def tier_get(server=None, tier=None):
     if not server or not tier:
@@ -464,6 +474,8 @@ def after_request(response):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    app.debug = bool(os.environ.get('FLASK_DEBUG', False))
+    print 'App in debug mode?', bool(app.debug)
     app.secret_key = local.SECRET
     ip = '0.0.0.0'
     http = WSGIServer((ip, port), app)
