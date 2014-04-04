@@ -35,7 +35,6 @@ app = Flask(__name__)
 in_stackato = os.getenv('STACKATO_APP_NAME')
 
 servers = {
-    'local': 'http://localhost:8000',
     'dev': 'https://marketplace-dev.allizom.org',
     'stage': 'https://marketplace.allizom.org',
     'prod': 'https://marketplace.firefox.com'
