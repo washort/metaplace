@@ -255,7 +255,7 @@ def tiers():
         res = requests.get('{0}{1}?provider={2}'.format(
             servers[server], api['tiers'], provider))
         result = fill_tiers(res.json(), region)
-        return render_template('tiers.html', result=result['objects'],
+        return render_template('tiers.html', result=result.get('objects', []),
                                regions=regions,
                                sorted=[region] if region else regions_sorted,
                                methods=methods, server=server,
