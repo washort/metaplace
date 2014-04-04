@@ -11,6 +11,7 @@
       <select name="provider">
         <option value="bango" {% if request.values.get('provider', '')  == 'bango' %}selected{% endif %}>Bango</option>
         <option value="boku" {% if request.values.get('provider', '')  == 'boku' %}selected{% endif %}>Boku</option>
+        <option value="reference" {% if request.values.get('provider', '')  == 'reference' %}selected{% endif %}>Reference</option>
       </select>
       <select name="region">
         <option value="">All Regions</option>
