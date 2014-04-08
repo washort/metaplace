@@ -5,30 +5,79 @@
 {% endblock css %}
 
 {%- macro arewefastyet(ms) -%}
-  {%- if ms > 1000 -%}
+  {%- if ms > 800 -%}
     danger
-  {%- elif ms > 500 -%}
-    warning
-  {%- else -%}
-    success
   {%- endif -%}
 {%- endmacro -%}
 
 {% block body %}
-  <div id="content">
-  <div id="loading"></div>
-  {% for check in checks %}
-    <div class="col-sm-4">
-      <div class="panel panel-{{ arewefastyet(check.avg) }}">
-        <div class="panel-heading">
-          <h3 class="panel-title" title="{{check.url}}">{{check.name}}</h3>
-        </div>
-        <div class="panel-body">
-            {{check.avg}} <span class="unit">ms</span>
-        </div>
-      </div>
-    </div><!-- /.col-sm-4 -->
-  {% endfor %}
+  <table id="content">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Source</th>
+        <th>CDN</th>
+      </tr>
+    </thead>
+
+    <tr class="" colspan="3">
+      <th>Fireplace</th>
+    </tr>
+    {% for check in fireplace %}
+      <tr>
+        <td class="title">{{check.name|replace('Fireplace ','')}}</td>
+        <td class="{{ arewefastyet(check.source_avg) }}" title="{{ check.source_url }}">
+          {{ check.source_avg }}
+          {% if check.source_avg is number %}
+            <span class="unit">ms</span>
+          {% endif %}
+        </td>
+        <td class="{{ arewefastyet(check.cdn_avg) }}" title="{{ check.cdn_url }}">
+          {% if check.name == "Fireplace App" %}
+            <span class="note">Discussion in <a href="https://bugzil.la/991955">bug 991955</a></span>
+          {% elif check.cdn_avg is number %}
+            {{ check.cdn_avg }}
+            <span class="unit">ms</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+
+    <tr class="" colspan="3">
+      <th>Other</th>
+    </tr>
+    {% for check in other %}
+      <tr>
+        <td class="title">{{check.name|replace('Full ','')}}</td>
+        <td class="{{ arewefastyet(check.source_avg) }}" title="{{ check.source_url }}">
+          {{ check.source_avg }}
+          {% if check.source_avg is number %}
+            <span class="unit">ms</span>
+          {% endif %}
+        </td>
+        <td class="{{ arewefastyet(check.cdn_avg) }}" title="{{ check.cdn_url }}">
+          {% if check.name == "Full App Rating" %}
+            <span class="note">Discussion in <a href="https://bugzil.la/989181">bug 989181</a></span>
+          {% elif check.name == "Full App" %}
+            <span class="note">N/A</span>
+          {% elif check.name == "Full Featured" %}
+            <span class="note">N/A</span>
+          {% elif check.name == "Full App Version" %}
+            <span class="note">N/A</span>
+          {% elif check.name == "Full Search" %}
+            <span class="note">N/A</span>
+          {% elif check.cdn_avg is number %}
+            {{ check.cdn_avg }}
+            <span class="unit">ms</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <div id="footnote">APIs used by marketplace.firefox.com (labeled Fireplace)
+    are cached in a worldwide CDN for a few minutes to improve local load times.
+    The numbers shown here are a global average of the time it takes to load these
+    APIs from the west coast of the USA.  Hover over the values to see exact URLs.
   </div>
 {% endblock %}
 {% block footer%}
