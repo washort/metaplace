@@ -1,5 +1,6 @@
 // If you add a source here, you'll need to add a column in the HTML table also
 var sources = {
+    'landfill': 'https://landfill-mkt.allizom.org/api/v1/services/config/site/',
     'altdev': 'https://marketplace-altdev.allizom.org/api/v1/services/config/site/',
     'dev': 'https://marketplace-dev.allizom.org/api/v1/services/config/site/',
     'stage': 'https://marketplace.allizom.org/api/v1/services/config/site/',
