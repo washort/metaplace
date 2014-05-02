@@ -37,7 +37,8 @@ in_stackato = os.getenv('STACKATO_APP_NAME')
 servers = {
     'dev': 'https://marketplace-dev.allizom.org',
     'stage': 'https://marketplace.allizom.org',
-    'prod': 'https://marketplace.firefox.com'
+    'prod': 'https://marketplace.firefox.com',
+    'altpay': 'https://payments-alt.allizom.org'
 }
 
 api = {

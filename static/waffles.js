@@ -2,6 +2,7 @@
 var sources = {
     'landfill': 'https://landfill-mkt.allizom.org/api/v1/services/config/site/',
     'altdev': 'https://marketplace-altdev.allizom.org/api/v1/services/config/site/',
+    'altpay': 'https://payments-alt.allizom.org/api/v1/services/config/site/',
     'dev': 'https://marketplace-dev.allizom.org/api/v1/services/config/site/',
     'stage': 'https://marketplace.allizom.org/api/v1/services/config/site/',
     'prod': 'https://marketplace.firefox.com/api/v1/services/config/site/',
