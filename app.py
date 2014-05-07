@@ -59,6 +59,13 @@ methods = {
     2: 'both'
 }
 
+provider_lookup = {
+    '0': 'paypal',
+    '1': 'bango',
+    '2': 'reference',
+    '3': 'boku'
+}
+
 regions_sorted = sorted(regions.keys())
 
 builds = {
@@ -401,6 +408,7 @@ def transactions(server=None, date=''):
                     stats['currencies'].append((row['currency'],
                                                 Decimal(row['amount'])))
 
+                row['provider'] = provider_lookup[row.get('provider', '1')]
                 rows.append(row)
 
             if len(stats['diff']):

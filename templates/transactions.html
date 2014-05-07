@@ -48,6 +48,7 @@
         <th>Source</th>
         <th>Carrier</th>
         <th>Region</th>
+        <th>Provider</th>
       </tr>
     </thead>
     <tbody>
@@ -64,6 +65,7 @@
         <td>{{ row['source'] }}</td>
         <td>{{ row.get('carrier', '') }}</td>
         <td>{{ row.get('region', '') }}</td>
+        <td>{{ row['provider'] }} </td>
       </tr>
       {% endfor %}
     </tbody>
