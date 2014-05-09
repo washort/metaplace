@@ -9,7 +9,8 @@
   </p>
   {% if filename %}<p class="alert">Results for: <b>{{ filename }}</b>.</p>{% endif %}
   {% if rows %}
-  <h2>Summary</h2>
+  <h2>Completed</h2>
+  {% if stats.currencies %}
   <table class="table table-striped">
     <thead>
       <tr>
@@ -29,12 +30,28 @@
     </tbody>
   </table>
   <p>Average time to completion: <b>{{ stats['mean'] }} seconds</b>.</p>
-  <p>Transaction success rate:</p>
-  <div class="progress">
-    {% for status, percent in stats.statuses %}
-      <div class="bar bar-{{ statuses[status][1] }}" style="width: {{ percent }}%;">{{ percent }}%</div>
-    {% endfor %}
-  </div>
+  {% else %}
+  <p>None</p>
+  {% endif %}
+  <h2>Transactions</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Actual</th>
+        <th>Percent</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for status, actual, percent in stats.statuses %}
+        <tr>
+          <td>{{ statuses[status][0] }}</td>
+          <td>{{ actual }}</td>
+          <td>{{ percent }}%</td>
+       </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   <h2>Details</h2>
   <table class="table table-striped">
     <thead>
@@ -49,6 +66,7 @@
         <th>Carrier</th>
         <th>Region</th>
         <th>Provider</th>
+        <th>Id</th>
       </tr>
     </thead>
     <tbody>
@@ -66,6 +84,7 @@
         <td>{{ row.get('carrier', '') }}</td>
         <td>{{ row.get('region', '') }}</td>
         <td>{{ row['provider'] }} </td>
+        <td>{{ row['uuid'] }}</td>
       </tr>
       {% endfor %}
     </tbody>

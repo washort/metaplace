@@ -418,7 +418,7 @@ def transactions(server=None, date=''):
             for status, group in groupby(sorted(stats['status'])):
                 group = len(list(group))
                 perc = (group / len(stats['status'])) * 100
-                stats['statuses'].append((str(status), '%.2f' % perc))
+                stats['statuses'].append((str(status), group, '%.2f' % perc))
 
             stats['currencies'] = list_to_dict_multiple(stats['currencies'])
             for currency, items in stats['currencies'].items():
