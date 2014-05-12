@@ -77,12 +77,12 @@ builds = {
 }
 
 statuses = {
-    '0': ['pending', 'null'],
+    '0': ['pending', 'warning'],
     '1': ['completed', 'success'],
     '2': ['checked', 'info'],
     '3': ['received', 'info'],
-    '4': ['failed', 'important'],
-    '5': ['cancelled', 'warning'],
+    '4': ['error', 'danger'],
+    '5': ['cancelled', 'danger'],
 }
 
 
