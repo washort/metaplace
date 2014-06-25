@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
   <p>
-    {% for server in ['prod', 'stage'] %}
+    {% for server in ['prod', 'stage', 'payments-alt'] %}
       {% for text, date in dates %}
         <a href="/transactions/{{ server }}/{{ date }}/">{{ server }} {{ text }}</a>{% if not loop.last %} &bull; {% endif %}
-      {% endfor %}{% if not loop.last %} | {% endif %}
+      {% endfor %}{% if not loop.last %}<br>{% endif %}
     {% endfor %}
   </p>
   {% if filename %}<p class="alert">Results for: <b>{{ filename }}</b>.</p>{% endif %}
@@ -62,6 +62,7 @@
         <th>Started</th>
         <th>Took (avg. {{ stats['mean'] }})</th>
         <th>Seller ID*</th>
+        <th>Buyer ID</th>
         <th>Source</th>
         <th>Carrier</th>
         <th>Region</th>
@@ -80,6 +81,7 @@
         <td>{{ row['created'].strftime('%H:%M:%S') }}</td>
         <td>{% if row['diff'].days >= 0 %}{{ row['diff'] }}{% else %}0:00:00{% endif %}</td>
         <td>{{ row['seller'][:5] }}...</td>
+        <td>{% if row['buyer'] %}{{ row['buyer'][:5] }}...{% endif %}</td>
         <td>{{ row['source'] }}</td>
         <td>{{ row.get('carrier', '') }}</td>
         <td>{{ row.get('region', '') }}</td>

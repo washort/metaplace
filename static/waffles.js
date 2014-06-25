@@ -1,10 +1,12 @@
-// If you add a source here, you'll need to add a column in the HTML table also
+// If you add a source here, you'll need to add a column in the HTML table
+// also. The order of the sources here must match the order of tables created
+// in the template.
 var sources = {
     'landfill': 'https://landfill-mkt.allizom.org/api/v1/services/config/site/',
     'altdev': 'https://marketplace-altdev.allizom.org/api/v1/services/config/site/',
-    'altpay': 'https://payments-alt.allizom.org/api/v1/services/config/site/',
     'dev': 'https://marketplace-dev.allizom.org/api/v1/services/config/site/',
     'stage': 'https://marketplace.allizom.org/api/v1/services/config/site/',
+    'altpay': 'https://payments-alt.allizom.org/api/v1/services/config/site/',
     'prod': 'https://marketplace.firefox.com/api/v1/services/config/site/',
 }
 
