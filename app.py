@@ -50,7 +50,7 @@ regions = {
     # Casting int as strings because its easier.
     '1': 'Worldwide', '2': 'US', '4': 'UK', '7': 'Brazil', '8': 'Spain',
     '9': 'Colombia', '10': 'Venezuela', '11': 'Poland', '12': 'Mexico',
-    '13': 'Hungary', '14': 'Germany'
+    '13': 'Hungary', '14': 'Germany', '31': 'Bangladesh'
 }
 
 methods = {
@@ -69,9 +69,11 @@ provider_lookup = {
 regions_sorted = sorted(regions.keys())
 
 builds = {
-    'jenkins': ['solitude', 'marketplace', 'marketplace-api',
-                'marketplace-webpay', 'amo-master', 'solitude'],
+    'jenkins': [],
     'travis': ['andymckay/receipts', 'mozilla/fireplace',
+               'mozilla/commonplace', 'mozilla/zamboni',
+               'mozilla/spartacus', 'mozilla/solitude',
+               'mozilla/webpay',
                'andymckay/django-paranoia', 'andymckay/curling',
                'andymckay/django-statsd', 'andymckay/mozilla-logger']
 }
