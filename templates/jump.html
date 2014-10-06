@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+<form id="jump">
+  <label>Jump to app:</label>
+  <input type="text" placeholder="id or slug">
+  <h2>Marketplace versions</h2>
+  <p>Hidden apps on the production marketplace.</p>
+  <ul>
+    <li><a href="#" class="jump" data-slug="dev">Dev</a></li>
+    <li><a href="#" class="jump" data-slug="marketplace-payments-alt">Payments alt</a></li>
+    <li><a href="#" class="jump" data-slug="marketplace-6">Stage</a></li>
+  </ul>
+</form>
+
+{% endblock %}
+

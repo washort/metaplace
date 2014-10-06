@@ -247,9 +247,9 @@ def build():
                            all=passing)
 
 
-@app.route('/debug/')
-def debug():
-    return render_template('debug.html')
+@app.route('/jump/')
+def jump():
+    return render_template('jump.html')
 
 
 @app.route('/manifest.webapp')

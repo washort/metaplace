@@ -30,15 +30,23 @@ navigator.id.watch({
   }
 });
 
-$('#debug').on('submit', function() {
-  if ('MozActivity' in window) {
+function jump(val) {
+    if ('MozActivity' in window) {
     var activity = new MozActivity({
       name: "marketplace-app",
-      data: {slug: $('#debug input:eq(0)').val()}
+      data: {slug: val}
     });
   } else {
-    alert('No web activity API, sorry.');
+    window.location = 'https://marketplace.firefox.com/app/' + val;
   }
+}
+
+$('#jump').on('submit', function() {
+  jump($('#jump input:eq(0)').val());
+});
+
+$('a.jump').on('click', function() {
+  jump($(this).data('slug'));
 });
 
 $('#install').on('click', function() {

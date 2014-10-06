@@ -28,7 +28,7 @@
           <li {% if request.path == '/builds/' %}class="active"{% endif %}><a href="/build/">Build status</a></li>
           <li {% if request.path.startswith('/tiers/') %}class="active"{% endif %}><a href="/tiers/">Price tiers</a></li>
           <li {% if request.path.startswith('/transactions/') %}class="active"{% endif %}><a href="/transactions/">Transactions</a></li>
-          <li {% if request.path.startswith('/debug/') %}class="active"{% endif %}><a href="/debug/">Debug</a></li>
+          <li {% if request.path.startswith('/jump/') %}class="active"{% endif %}><a href="/jump/">Jump</a></li>
           <li {% if request.path.startswith('/apikiosk/') %}class="active"{% endif %}><a href="/apikiosk/">API Speed</a></li>
           <li {% if request.path.startswith('/bugskiosk/') %}class="active"{% endif %}><a href="/bugskiosk/">Bugs Kiosk</a></li>
           <li {% if request.path.startswith('/waffles/') %}class="active"{% endif %}><a href="/waffles/">Waffles</a></li>
