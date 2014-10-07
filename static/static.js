@@ -31,7 +31,7 @@ navigator.id.watch({
 });
 
 function jump(val) {
-    if ('MozActivity' in window) {
+  if ('MozActivity' in window) {
     var activity = new MozActivity({
       name: "marketplace-app",
       data: {slug: val}
