@@ -40,7 +40,7 @@ function Waffle() {
             var tr = $('<tr />');
             tr.attr('id', this.name);
 
-            var info_td = $('<td><strong>' + this.name + '</strong>: ' + this.note + '</td>');
+            var info_td = $('<td><strong>' + this.name + '</strong> (' + this.type + '): ' + this.note + '</td>');
             tr.append(info_td);
 
             var that = this; // no idea if this is legit!
@@ -73,7 +73,7 @@ function Waffle() {
 
 /* Simple function which is passed a waffle and adds it to our collection of
  * waffle objects so we can draw it on the page. */
-function consume(source, data) {
+function consume(source, data, type) {
 
     var waffle = {};
     var key = data.name;
@@ -85,6 +85,7 @@ function consume(source, data) {
     }
 
     waffle.id = data.id;
+    waffle.type = type;
     waffle.name = data.name;
     waffle.note = data.note;
     waffle.alttext = '';
@@ -140,15 +141,15 @@ function tastywaffles(source, data) {
         return;
     }
 
-     var call_me_maybe = function(things) {
+     var call_me_maybe = function(things, type) {
          if (things) {
-             $.each(things, function(_, thingy) { consume(source, thingy); });
+             $.each(things, function(_, thingy) { consume(source, thingy, type); });
          }
      };
 
-     call_me_maybe(data.waffle.switches);
-     call_me_maybe(data.waffle.flags);
-     call_me_maybe(data.waffle.samples);
+     call_me_maybe(data.waffle.switches, 'switch');
+     call_me_maybe(data.waffle.flags, 'flag');
+     call_me_maybe(data.waffle.samples, 'sample');
 }
 
 $(document).ready(function() {
