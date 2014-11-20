@@ -51,7 +51,7 @@ regions = {
     '1': 'Worldwide', '2': 'US', '4': 'UK', '7': 'Brazil', '8': 'Spain',
     '9': 'Colombia', '10': 'Venezuela', '11': 'Poland', '12': 'Mexico',
     '13': 'Hungary', '14': 'Germany', '31': 'Bangladesh', '23': 'Chile',
-    '18': 'Peru', '19': 'Uruguay', '17': 'Greece'
+    '18': 'Peru', '19': 'Uruguay', '17': 'Greece', '37': 'South Africa'
 }
 
 methods = {
