@@ -2,6 +2,7 @@
 // also. The order of the sources here must match the order of tables created
 // in the template.
 var sources = {
+    'local': 'http://mp.dev/api/v1/services/config/site/',
     'altdev': 'https://marketplace-altdev.allizom.org/api/v1/services/config/site/',
     'dev': 'https://marketplace-dev.allizom.org/api/v1/services/config/site/',
     'stage': 'https://marketplace.allizom.org/api/v1/services/config/site/',

@@ -13,7 +13,7 @@
     <tbody>
       {% for name, status in result.results.items() %}
         <tr>
-        <td>{{ name }}<td>
+        <td><a href="https://travis-ci.org/{{ name }}">{{ name }}</a><td>
         <td>{% if status %}<span class="btn btn-success disabled">Passing</span>
           {% else %}<span class="btn btn-danger disabled">Failing</span>
           {% endif %}</td>
