@@ -41,6 +41,18 @@ function jump(val) {
   }
 }
 
+function usage() {
+  if ('MozActivity' in window) {
+    console.log('marketplace-search');
+    var activity = new MozActivity({
+      name: 'marketplace-search',
+      data: {type: 'firefox-os-app-stats'}
+    });
+  } else {
+    window.location = 'https://marketplace.firefox.com/usage';
+  }
+}
+
 $('#jump').on('submit', function() {
   jump($('#jump input:eq(0)').val());
 });
@@ -49,9 +61,18 @@ $('a.jump').on('click', function() {
   jump($(this).data('slug'));
 });
 
+$('a.usage').on('click', function() {
+  usage();
+});
+
 $('#install').on('click', function() {
   var request = window.navigator.mozApps.install('https://metaplace.paas.allizom.org/manifest.webapp', null);
   request.onerror = function(e) {
     alert("Error installing app : " + request.error.name);
   };
+});
+
+$('#show').on('click', function() {
+    $('.hidden').removeClass('hidden');
+    return false;
 });

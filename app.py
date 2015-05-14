@@ -432,7 +432,8 @@ def transactions(server=None, date=''):
 
             return render_template('transactions.html', rows=rows,
                                    server=server, dates=dates, stats=stats,
-                                   statuses=statuses, filename=dest_filename)
+                                   statuses=statuses, filename=dest_filename,
+                                   filedata=open(dest).read())
 
     return render_template('transactions.html', dates=dates)
 

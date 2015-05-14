@@ -7,7 +7,13 @@
       {% endfor %}{% if not loop.last %}<br>{% endif %}
     {% endfor %}
   </p>
-  {% if filename %}<p class="alert">Results for: <b>{{ filename }}</b>.</p>{% endif %}
+  {% if filename %}
+    <p class="alert">Results for: <b>{{ filename }}</b> (<a id="show" href="">raw data</a>).</p>
+    <div class="hidden">
+        <h2>Raw Source</h2>
+        <pre>{{ filedata }}</pre>
+    </div>
+  {% endif %}
   {% if rows %}
   <h2>Completed</h2>
   {% if stats.currencies %}
