@@ -86,6 +86,8 @@ statuses = {
     '3': ['received', 'info'],
     '4': ['error', 'danger'],
     '5': ['cancelled', 'danger'],
+    '6': ['started', 'warning'],
+    '7': ['errored', 'danger'],
 }
 
 
