@@ -51,7 +51,12 @@ regions = {
     '1': 'Worldwide', '2': 'US', '4': 'UK', '7': 'Brazil', '8': 'Spain',
     '9': 'Colombia', '10': 'Venezuela', '11': 'Poland', '12': 'Mexico',
     '13': 'Hungary', '14': 'Germany', '31': 'Bangladesh', '23': 'Chile',
-    '18': 'Peru', '19': 'Uruguay', '17': 'Greece', '37': 'South Africa'
+    '18': 'Peru', '19': 'Uruguay', '17': 'Greece', '37': 'South Africa',
+    '22': 'Italy', '30': 'France', '38': 'Lithuania', '71': 'Austria',
+    '77': 'Belgium', '105': 'Cyprus', '112': 'Estonia', '117': 'Finland',
+    '140': 'Ireland', '151': 'Latvia', '157': 'Luxembourg', '163': 'Malta',
+    '178': 'Netherlands', '178': 'Portugal', '214': 'Slovakia',
+    '215': 'Slovenia'
 }
 
 methods = {
@@ -61,6 +66,7 @@ methods = {
 }
 
 provider_lookup = {
+    '': 'none',
     '0': 'paypal',
     '1': 'bango',
     '2': 'reference',
