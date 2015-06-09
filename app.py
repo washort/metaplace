@@ -56,7 +56,7 @@ regions = {
     '77': 'Belgium', '105': 'Cyprus', '112': 'Estonia', '117': 'Finland',
     '140': 'Ireland', '151': 'Latvia', '157': 'Luxembourg', '163': 'Malta',
     '178': 'Netherlands', '178': 'Portugal', '214': 'Slovakia',
-    '215': 'Slovenia'
+    '215': 'Slovenia', '37': 'Netherlands'
 }
 
 methods = {
