@@ -27,12 +27,18 @@ from werkzeug.contrib.cache import MemcachedCache
 import local
 
 log_cache = os.path.join(os.path.dirname(__file__), 'cache')
-cache = MemcachedCache([os.getenv('MEMCACHE_URL', 'localhost:11211')])
+import pylibmc
+
+servers = os.environ.get('MEMCACHIER_SERVERS', ['localhost:11211']).split(',')
+user = os.environ.get('MEMCACHIER_USERNAME', '')
+passwd = os.environ.get('MEMCACHIER_PASSWORD', '')
+
+mc = pylibmc.Client(servers, binary=True, username=user, password=passwd)
+cache = MemcachedCache(mc)
 CACHE_TIMEOUT = 600
 
 app = Flask(__name__)
 
-in_stackato = os.getenv('STACKATO_APP_NAME')
 
 servers = {
     'dev': 'https://marketplace-dev.allizom.org',
@@ -464,8 +470,7 @@ def login():
 
     # Send the assertion to Mozilla's verifier service.
     data = {'assertion': request.form['assertion'],
-            'audience': 'https://metaplace.paas.allizom.org/' if in_stackato
-                else 'http://localhost:5000/'}
+            'audience': 'https://metaplace.herokuapp.com/'}
     resp = requests.post('https://verifier.login.persona.org/verify',
                          data=data, verify=True)
 
